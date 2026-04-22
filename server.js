@@ -9,16 +9,16 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// 🔗 BANCO
+// BANCO DE DADOS
 mongoose.connect("mongodb://ADMIN:12345@ac-valttbo-shard-00-00.2x7yeza.mongodb.net:27017,ac-valttbo-shard-00-01.2x7yeza.mongodb.net:27017,ac-valttbo-shard-00-02.2x7yeza.mongodb.net:27017/sistema-ti?ssl=true&replicaSet=atlas-kfmx88-shard-0&authSource=admin&retryWrites=true&w=majority")
 .then(() => console.log("Banco conectado"))
 .catch(err => console.log(err));
 
-// MODELS
+// modelo de chamado
 const User = require("./models/User");
 const Chamado = require("./models/Chamado");
 
-// 🔐 AUTH
+// AUTHENTICAÇÂO
 function auth(req, res, next) {
   let token = req.headers.authorization;
 
@@ -37,7 +37,7 @@ function auth(req, res, next) {
   }
 }
 
-// 🔒 TECNICO OU ADMIN
+// PERMITIR VER USUARIOS TECNICO E ADMIN
 function somenteTecnico(req, res, next) {
   if (req.user.role !== "tecnico" && req.user.role !== "admin") {
     return res.status(403).json({ error: "Acesso negado" });
@@ -45,7 +45,7 @@ function somenteTecnico(req, res, next) {
   next();
 }
 
-// 👑 ADMIN
+// ADMINISTRADOR
 function somenteAdmin(req, res, next) {
   if (req.user.role !== "admin") {
     return res.status(403).json({ error: "Apenas admin" });
@@ -53,12 +53,12 @@ function somenteAdmin(req, res, next) {
   next();
 }
 
-// HOME
+// Inicial
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html"));
 });
 
-// REGISTER
+// Criar seu acesso
 app.post("/register", async (req, res) => {
   try {
     const { nome, email, senha } = req.body;
@@ -156,7 +156,7 @@ chamado.mensagens.push({
   res.json({ message: "Mensagem enviada!" });
 });
 
-// 👥 LISTAR USUÁRIOS
+// Colocar o usuario em lista na aba de user
 app.get("/usuarios", auth, somenteTecnico, async (req, res) => {
   try {
     const users = await User.find().select("-senha");
@@ -166,7 +166,7 @@ app.get("/usuarios", auth, somenteTecnico, async (req, res) => {
   }
 });
 
-// 👑 PROMOVER
+// Promovendo usuario de função
 app.put("/promover/:id", auth, somenteAdmin, async (req, res) => {
   await User.findByIdAndUpdate(req.params.id, { role: "tecnico" });
   res.json({ message: "Promovido!" });

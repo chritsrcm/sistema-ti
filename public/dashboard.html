@@ -43,7 +43,7 @@
       color: black;
     }
 
-    /* 🔥 CHAT MINI */
+    /*  CHAT pequeno especificações */
     #chatBox {
       position: fixed;
       right: 20px;
@@ -150,7 +150,7 @@
   </div>
 </div>
 
-<!-- 🔥 CHAT MINI -->
+<!-- Chat pequeno na lateral -->
 <div id="chatBox">
 
   <div class="chat-header">
@@ -171,7 +171,7 @@
 let meuRole = "";
 let chamadoAtual = null;
 
-// PERFIL
+// PERFIL DO USUARIO
 async function carregarPerfil() {
   const token = localStorage.getItem("token");
 
@@ -232,7 +232,7 @@ async function carregarUsuarios() {
   });
 }
 
-// 🔥 PROMOVER USUÁRIO
+//  PROMOVER USUÁRIO de função
 async function promover(id) {
   const token = localStorage.getItem("token");
 
@@ -248,7 +248,7 @@ async function promover(id) {
   carregarUsuarios(); // recarrega lista
 }
 
-// CHAMADOS
+// CHAMADOS EXISTENTES
 async function carregarChamados() {
   const token = localStorage.getItem("token");
 
@@ -307,13 +307,13 @@ async function carregarChamados() {
     div.appendChild(item);
   });
 
-  // 🔥 RESUMO
+  // RESUMO DOS CHAMADOS
   document.getElementById("abertos").innerText = abertos;
   document.getElementById("andamento").innerText = andamento;
   document.getElementById("vencidos").innerText = vencidos;
 }
 
-// CHAT
+// CHAT com o técnico
 function abrirChat(chamado) {
   chamadoAtual = chamado;
   document.getElementById("chatTitulo").innerText = chamado.titulo;
