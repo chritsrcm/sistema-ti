@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat do Chamado</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>Chat do Chamado</h2>
+
+  <div id="mensagens" style="margin-bottom: 20px;"></div>
+
+  <input type="text" id="msg" placeholder="Digite sua mensagem">
+  <button onclick="enviar()">Enviar</button>
+
+  <button onclick="voltar()">Voltar</button>
+</div>
+
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const id = urlParams.get("id");
+
+let meuRole = "";
+
+async function carregar() {
+  const token = localStorage.getItem("token");
+
+  // pega perfil pra saber quem sou
+  const perfilRes = await fetch("/perfil", {
+    headers: {
+      Authorization: "Bearer " + token
+    }
+  });
+
+  const perfil = await perfilRes.json();
+  meuRole = perfil.role;
+
+  const res = await fetch("/chamados", {
+    headers: {
+      Authorization: "Bearer " + token
+    }
+  });
+
+  const chamados = await res.json();
+  const chamado = chamados.find(c => c._id === id);
+
+  const div = document.getElementById("mensagens");
+  div.innerHTML = "";
+
+  chamado.mensagens.forEach(m => {
+    const p = document.createElement("div");
+
+    p.style.padding = "8px";
+    p.style.margin = "5px 0";
+    p.style.borderRadius = "8px";
+    p.style.maxWidth = "70%";
+
+    if (m.autor === meuRole) {
+      p.style.background = "#3b82f6";
+      p.style.marginLeft = "auto";
+    } else {
+      p.style.background = "#475569";
+      p.style.marginRight = "auto";
+    }
+
+    p.innerText = m.texto;
+
+    div.appendChild(p);
+  });
+}
+
+async function enviar() {
+  const texto = document.getElementById("msg").value;
+  const token = localStorage.getItem("token");
+
+  if (!texto) return;
+
+  await fetch("/chamados/" + id + "/mensagem", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token
+    },
+    body: JSON.stringify({ texto })
+  });
+
+  document.getElementById("msg").value = "";
+  carregar();
+}
+
+function voltar() {
+  window.location.href = "lista-chamados.html";
+}
+
+carregar();
+</script>
+
+</body>
+</html>

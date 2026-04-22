@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cadastro</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>Criar Conta</h2>
+
+  <input type="text" id="nome" placeholder="Nome">
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="senha" placeholder="Senha">
+
+  <button onclick="registrar()">Cadastrar</button>
+
+  <p id="msg"></p>
+
+  <p><a href="login.html">Voltar para login</a></p>
+</div>
+
+<script>
+async function registrar() {
+  const nome = document.getElementById("nome").value;
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+  const msg = document.getElementById("msg");
+
+  msg.innerText = "Criando...";
+
+  const res = await fetch("/register", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ nome, email, senha })
+  });
+
+  const data = await res.json();
+
+  if (res.status !== 200) {
+    msg.innerText = data.error;
+    return;
+  }
+
+  msg.innerText = "Conta criada!";
+  setTimeout(() => window.location.href = "login.html", 1000);
+}
+</script>
+
+</body>
+</html>

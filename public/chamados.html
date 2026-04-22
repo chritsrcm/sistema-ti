@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Novo Chamado</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #0f172a;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .box {
+      width: 400px;
+      background: #020617;
+      padding: 30px;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    }
+
+    .box h2 {
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    .input-group input,
+    .input-group textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #1e293b;
+      background: #020617;
+      color: white;
+    }
+
+    .input-group textarea {
+      resize: none;
+      height: 100px;
+    }
+
+    .input-group input:focus,
+    .input-group textarea:focus {
+      border-color: #3b82f6;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: none;
+      background: #2563eb;
+      font-weight: bold;
+      margin-top: 10px;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    button.loading {
+      background: #1e293b;
+      cursor: not-allowed;
+    }
+
+    .voltar {
+      background: transparent;
+      border: 1px solid #1e293b;
+    }
+
+    .voltar:hover {
+      background: #1e293b;
+    }
+
+    #msg {
+      margin-top: 10px;
+      font-size: 14px;
+      text-align: center;
+    }
+  </style>
+
+</head>
+<body>
+
+<div class="box">
+
+  <h2>Novo Chamado</h2>
+
+  <div class="input-group">
+    <input type="text" id="titulo" placeholder="Título do problema">
+  </div>
+
+  <div class="input-group">
+  <input type="text" id="titulo" placeholder="Título do problema">
+</div>
+
+<div class="input-group">
+  <textarea id="descricao" placeholder="Descreva o problema..."></textarea>
+</div>
+
+<div class="input-group">
+  <select id="categoria">
+    <option value="Hardware">Hardware</option>
+    <option value="Software">Software</option>
+    <option value="Rede">Rede</option>
+    <option value="Impressora">Impressora</option>
+    <option value="Outro">Outro</option>
+  </select>
+</div>
+
+  <button id="btn" onclick="criarChamado()">Enviar Chamado</button>
+
+  <p id="msg"></p>
+
+  <button class="voltar" onclick="voltar()">Voltar</button>
+
+</div>
+
+<script>
+async function criarChamado() {
+  const titulo = document.getElementById("titulo").value;
+  const descricao = document.getElementById("descricao").value;
+  const categoria = document.getElementById("categoria").value; // 🔥 AQUI
+
+  const token = localStorage.getItem("token");
+  const msg = document.getElementById("msg");
+  const btn = document.getElementById("btn");
+
+  if (!titulo || !descricao) {
+    msg.innerText = "Preencha todos os campos!";
+    return;
+  }
+
+  btn.innerText = "Enviando...";
+  btn.classList.add("loading");
+
+  const res = await fetch("/chamados", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+
+    // 🔥 AQUI VAI O JSON
+    body: JSON.stringify({
+      titulo,
+      descricao,
+      categoria
+    })
+  });
+
+  const data = await res.json();
+
+  if (res.status !== 200) {
+    msg.innerText = data.error;
+    btn.innerText = "Enviar Chamado";
+    btn.classList.remove("loading");
+    return;
+  }
+
+  msg.innerText = "Chamado criado com sucesso!";
+
+  setTimeout(() => {
+    window.location.href = "dashboard.html";
+  }, 800);
+}
+
+function voltar() {
+  window.location.href = "dashboard.html";
+}
+
+const ChamadoSchema = new mongoose.Schema({
+  titulo: String,
+  descricao: String,
+
+  categoria: String,
+
+  status: {
+    type: String,
+    default: "aberto"
+  },
+
+  criadoEm: {
+    type: Date,
+    default: Date.now
+  },
+
+  usuario: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  },
+
+  mensagens: [
+    {
+      autor: String,
+      texto: String,
+      data: {
+        type: Date,
+        default: Date.now
+      }
+    }
+  ]
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Meus Chamados</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>Chamados</h2>
+
+  <div id="lista"></div>
+
+  <button onclick="voltar()">Voltar</button>
+</div>
+
+<script>
+async function carregarChamados() {
+  const token = localStorage.getItem("token");
+
+  // 🔒 proteção
+  if (!token) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  const res = await fetch("/chamados", {
+    headers: {
+      Authorization: "Bearer " + token
+    }
+  });
+
+  const chamados = await res.json();
+
+  const lista = document.getElementById("lista");
+  lista.innerHTML = "";
+
+  chamados.forEach(c => {
+    const div = document.createElement("div");
+
+    div.style.marginBottom = "10px";
+    div.style.padding = "10px";
+    div.style.background = "#334155";
+    div.style.borderRadius = "5px";
+    div.style.cursor = "pointer";
+
+    // 🔥 clique no chamado
+    div.onclick = () => {
+      window.location.href = "chat.html?id=" + c._id;
+    };
+
+    div.innerHTML = `
+      <strong>${c.titulo}</strong><br>
+      ${c.descricao}<br>
+      Status: ${c.status}
+    `;
+
+    lista.appendChild(div);
+  });
+}
+
+function voltar() {
+  window.location.href = "dashboard.html";
+}
+
+carregarChamados();
+</script>
+
+</body>
+</html>
