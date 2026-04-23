@@ -11,6 +11,10 @@ const ChamadoSchema = new mongoose.Schema({
     enum: ["Hardware", "Software", "Rede", "Impressora", "Outro"],
     default: "Outro"
   },
+  empresa: String,
+setor: String,
+numero: String,
+arquivo: String,
 
   status: {
     type: String,
@@ -29,6 +33,13 @@ const ChamadoSchema = new mongoose.Schema({
     ref: "User"
   },
 
+  tecnico: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User",
+  default: null
+},
+
+
   mensagens: [
     {
       autor: String,
@@ -46,3 +57,4 @@ const ChamadoSchema = new mongoose.Schema({
 
 
 module.exports = mongoose.model("Chamado", ChamadoSchema);
+

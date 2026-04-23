@@ -125,7 +125,14 @@
   background: #020617;
   cursor: pointer;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 60px;
+
 }
+
+
 
 /* status */
 .status {
@@ -230,9 +237,10 @@
   <!-- SIDEBAR -->
   <div class="sidebar">
     <h3>Painel</h3>
-
+    
+    <button onclick="carregarChamados()"> Dashboard</button>
     <button onclick="abrirNovoChamado()">+ Novo Chamado</button>
-    <button onclick="carregarChamados()">📋 Chamados</button>
+    <button onclick="carregarChamadosFiltros()">📋 Chamados</button>
     <button onclick="carregarUsuarios()">👥 Usuários</button>
     <button onclick="logout()">Sair</button>
   </div>
@@ -251,15 +259,41 @@
 
         <h2 id="tituloPagina">Dashboard</h2>
 
+
+<div id="filtrosChamados" class="filtros">
+  <button onclick="filtrarChamados('todos')">Todos</button>
+  <button onclick="filtrarChamados('aberto')">🟢 Abertos</button>
+  <button onclick="filtrarChamados('andamento')">🟡 Andamento</button>
+  <button onclick="filtrarChamados('fechado')">🔴 Fechados</button>
+</div>
+
+<div id="buscaContainer" class="busca">
+  <input 
+    type="text" 
+    id="inputBusca" 
+    placeholder="🔍 Buscar chamado..."
+    oninput="filtrarChamados()"
+  >
+</div>
+
         <div class="resumo">
           <div class="card-resumo">🟢 <span id="abertos">0</span><br>Abertos</div>
           <div class="card-resumo">🟡 <span id="andamento">0</span><br>Andamento</div>
-          <div class="card-resumo">🔴 <span id="vencidos">0</span><br>Vencidos</div>
+          <div class="card-resumo">🔴 <span id="fechados">0</span><br>Fechados</div>
         </div>
-
+        
         <div id="listaChamados" class="chamados-grid"></div>
-        <div id="listaUsuarios" class="chamados-grid"></div>
+<div id="buscaUsuarios" class="busca">
+  <input 
+    type="text" 
+    id="inputBuscaUsuario" 
+    placeholder="🔍 Buscar usuário..."
+    oninput="filtrarUsuarios()"
+  >
+</div>
 
+        <div id="listaUsuarios" class="chamados-grid"></div>
+         
       </div>
     </div>
 
@@ -352,6 +386,8 @@ let listaNotificacoes = [];
 let meuRole = "";
 let chamadoAtual = null;
 let notificacoesNaoLidas = 0;
+let chamadosGlobal = [];
+let usuariosGlobal = [];
 
 // PERFIL DO USUARIO
 async function carregarPerfil() {
@@ -370,6 +406,9 @@ async function carregarPerfil() {
 }
 
 async function carregarUsuarios() {
+  mostrarFiltros(false);
+  mostrarBusca(false);
+  document.getElementById("buscaUsuarios").style.display = "block";
   const token = localStorage.getItem("token");
 
   const res = await fetch("/usuarios", {
@@ -386,9 +425,14 @@ async function carregarUsuarios() {
   const div = document.getElementById("listaUsuarios");
   const chamadosDiv = document.getElementById("listaChamados");
 
-  // limpa telas
+  // 🔥 CONTROLE DE TELA
+  div.style.display = "grid";
+  chamadosDiv.style.display = "none";
+
+  // 🔥 ESCONDE RESUMO
+  document.querySelector(".resumo").style.display = "none";
+
   div.innerHTML = "";
-  chamadosDiv.innerHTML = "";
 
   document.getElementById("tituloPagina").innerText = "Usuários";
 
@@ -404,16 +448,18 @@ async function carregarUsuarios() {
       ${
         meuRole === "admin" && u.role === "usuario"
         ? `<button onclick="promover('${u._id}')">
-            Promover para técnico
-          </button>`
+             Promover para técnico
+           </button>`
         : ""
       }
     `;
 
     div.appendChild(item);
   });
+usuariosGlobal = usuarios;
+mostrarUsuarios(usuarios);
+  
 }
-
 //  PROMOVER USUÁRIO de função
 async function promover(id) {
   const token = localStorage.getItem("token");
@@ -430,8 +476,209 @@ async function promover(id) {
   carregarUsuarios(); // recarrega lista
 }
 
+
+async function carregarChamadosFiltros() {
+ 
+ mostrarBusca(true);
+  const token = localStorage.getItem("token");
+
+  const res = await fetch("/chamados", {
+    headers: { Authorization: "Bearer " + token }
+  });
+
+  const chamados = await res.json();
+
+  chamadosGlobal = chamados;
+
+  // 🔥 CONTROLE DE TELA
+  document.getElementById("buscaUsuarios").style.display = "none";
+  document.getElementById("buscaContainer").style.display = "block";
+  document.getElementById("listaUsuarios").style.display = "none";
+  document.getElementById("listaChamados").style.display = "grid";
+  document.querySelector(".resumo").style.display = "flex";
+
+  document.getElementById("tituloPagina").innerText = "Chamados";
+  document.getElementById("tituloPagina").innerText = "Chamados";
+
+// mostra filtros
+document.getElementById("filtrosChamados").style.display = "flex";
+
+// esconde usuários
+document.getElementById("listaUsuarios").style.display = "none";
+
+// mostra chamados
+document.getElementById("listaChamados").style.display = "grid";
+
+const filtros = document.getElementById("filtrosChamados");
+filtros.style.display = "flex";
+
+setTimeout(() => {
+  filtros.classList.add("show");
+}, 10);
+
+  mostrarTodosChamados(chamados);
+}
+
+function mostrarTodosChamados(chamados) {
+
+
+  document.getElementById("buscaUsuarios").style.display = "none";
+  const div = document.getElementById("listaChamados");
+  div.innerHTML = "";
+
+  let abertos = 0;
+  let andamento = 0;
+  let fechados = 0;
+
+  chamados.forEach(c => {
+    
+    const nomeTecnico = c.tecnico && c.tecnico.nome 
+  ? c.tecnico.nome 
+  : "Não atribuído";
+    const agora = new Date();
+    const criado = new Date(c.criadoEm || c.createdAt);
+    const limite = new Date(criado);
+    limite.setDate(limite.getDate() + 3);
+
+    const dataTexto = criado.toLocaleString();
+    const diasRestantes = Math.ceil((limite - agora) / (1000 * 60 * 60 * 24));
+
+// 🔥 PRIORIDADE
+let prioridadeCor = "#22c55e";
+let prioridadeTexto = "NORMAL";
+
+// 🔥 SE FECHADO → SEMPRE NORMAL
+if (c.status !== "fechado") {
+  if (diasRestantes < 1) {
+    prioridadeCor = "#ef4444";
+    prioridadeTexto = "URGENTE";
+  } else if (diasRestantes <= 2) {
+    prioridadeCor = "#facc15";
+    prioridadeTexto = "ATENÇÃO";
+  }
+}
+
+// 🔥 TEMPO DE RESOLUÇÃO
+let tempoResolucao = "";
+
+if (c.status === "fechado") {
+  const fechado = new Date(c.fechadoEm || c.updatedAt);
+  const diff = Math.ceil((fechado - criado) / (1000 * 60 * 60 * 24));
+
+  tempoResolucao = `
+    <p style="color:#38bdf8;">
+      ⏱ Resolvido em ${diff} dias
+    </p>
+  `;
+}
+
+    // 🔥 CONTADORES
+    if (c.status === "aberto") abertos++;
+    if (c.status === "andamento") andamento++;
+    if (c.status === "fechado") fechados++;
+
+    const statusTexto =
+      c.status === "aberto" ? "Aberto" :
+      c.status === "andamento" ? "Em andamento" :
+      "Fechado";
+
+    const corStatus =
+      c.status === "aberto" ? "#22c55e" :
+      c.status === "andamento" ? "#facc15" :
+      "#ef4444";
+
+    const item = document.createElement("div");
+    item.classList.add("card");
+
+    item.innerHTML = `
+  <strong>${c.titulo}</strong><br>
+  ${c.descricao}<br>
+  <small>Categoria: ${c.categoria}</small><br>
+
+  <!-- 🔥 STATUS + PRIORIDADE -->
+  <div style="
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:10px;
+    margin-bottom:10px;
+  ">
+    <div style="
+      background:${corStatus};
+      color:#020617;
+      padding:4px 10px;
+      border-radius:6px;
+      font-size:12px;
+      font-weight:600;
+    ">
+      ${statusTexto}
+    </div>
+
+    <div style="
+      background:${prioridadeCor};
+      color:#020617;
+      padding:4px 10px;
+      border-radius:6px;
+      font-size:12px;
+      font-weight:600;
+      display:flex;
+      align-items:center;
+      gap:5px;
+    ">
+      ${prioridadeTexto === "URGENTE" ? "🔥" : prioridadeTexto === "ATENÇÃO" ? "⚠️" : "✔️"}
+      ${prioridadeTexto}
+    </div>
+  </div>
+
+  <!-- 🔥 BOTÃO BONITO E ALINHADO -->
+  ${
+    meuRole === "tecnico" && !c.tecnico
+      ? `<button style="
+          width:100%;
+          padding:8px;
+          border:none;
+          border-radius:8px;
+          background:#2563eb;
+          color:white;
+          font-weight:600;
+          margin-bottom:10px;
+          cursor:pointer;
+        " onclick="assumirChamado('${c._id}')">
+          Assumir chamado
+        </button>`
+      : ""
+  }
+
+  <p>🕒 Criado em: ${dataTexto}</p>
+
+  ${
+    c.status === "fechado"
+      ? tempoResolucao
+      : `<p>📅 ${diasRestantes} dias restantes</p>`
+  }
+`;
+
+    item.onclick = () => {
+      window.location.href = "detalhe.html?id=" + c._id;
+    };
+
+    div.appendChild(item);
+  });
+
+  // 🔥 ATUALIZA OS CARDS DO TOPO
+  document.getElementById("abertos").innerText = abertos;
+  document.getElementById("andamento").innerText = andamento;
+  document.getElementById("fechados").innerText = fechados;
+  document.getElementById("filtrosChamados").style.display = "flex";
+}
+
+
 // CHAMADOS EXISTENTES
 async function carregarChamados() {
+
+
+  document.getElementById("buscaUsuarios").style.display = "none";
+  mostrarBusca(false);
   const token = localStorage.getItem("token");
 
   const res = await fetch("/chamados", {
@@ -440,33 +687,59 @@ async function carregarChamados() {
 
   let chamados = await res.json();
 
-  // 🔥 FILTRO CORRETO (ANTES DO LOOP)
-  //chamados = chamados.filter(c => c.status !== "fechado" || !c.status);
-
   const div = document.getElementById("listaChamados");
   const usersDiv = document.getElementById("listaUsuarios");
+  const resumo = document.querySelector(".resumo");
 
+  // 🔥 CONTROLE DE TELA (O QUE FALTAVA)
+  div.style.display = "grid";
+  usersDiv.style.display = "none";
+  resumo.style.display = "flex";
+
+  // 🔥 TÍTULO
+  document.getElementById("tituloPagina").innerText = "Dashboard";
+
+  // limpa apenas chamados
   div.innerHTML = "";
-  usersDiv.innerHTML = "";
 
   let abertos = 0;
   let andamento = 0;
-  let vencidos = 0;
+  let fechados = 0;
 
-  chamados.forEach(c => {
+chamados.sort((a, b) => {
+  const dataA = new Date(a.criadoEm || a.createdAt);
+  const dataB = new Date(b.criadoEm || b.createdAt);
+  return dataA - dataB; // 🔥 mais antigo primeiro
+});
 
-  const agora = new Date();
-  const criado = new Date(c.criadoEm || c.createdAt);
-  const limite = new Date(criado);
 
-  limite.setDate(limite.getDate() + 4);
+  const chamadosFiltrados = chamados.filter(c =>
+    c.status === "aberto" || c.status === "andamento"
+  );
 
-  const dataTexto = criado.toLocaleString();
-  const diasRestantes = Math.ceil((limite - agora) / (1000 * 60 * 60 * 24));
+  chamadosFiltrados.forEach(c => {
+
+    const agora = new Date();
+    const criado = new Date(c.criadoEm || c.createdAt);
+    const limite = new Date(criado);
+
+    limite.setDate(limite.getDate() + 1);
+
+    const dataTexto = criado.toLocaleString();
+    const diasRestantes = Math.ceil((limite - agora) / (1000 * 60 * 60 * 24));
+    let prioridadeCor = "#22c55e"; // verde
+
+if (diasRestantes <= 1) prioridadeCor = "#ef4444"; // 🔴 urgente
+else if (diasRestantes <= 2) prioridadeCor = "#facc15"; // 🟡 atenção
+
+const prioridadeTexto =
+  diasRestantes <= 1 ? "URGENTE" :
+  diasRestantes <= 2 ? "ATENÇÃO" :
+  "NORMAL";
 
     if (c.status === "aberto") abertos++;
     if (c.status === "andamento") andamento++;
-    if (agora > limite && c.status !== "fechado") vencidos++;
+    if (agora > limite && c.status !== "fechado") fechados++;
 
     const item = document.createElement("div");
     item.classList.add("card");
@@ -491,8 +764,7 @@ async function carregarChamados() {
       </div>
 
       <p>🕒 Criado em: ${dataTexto}</p>
-<p>📅 ${diasRestantes} dias restantes</p>
-
+      <p>📅 ${diasRestantes} dias restantes</p>
     `;
 
     item.onclick = () => {
@@ -502,10 +774,12 @@ async function carregarChamados() {
     div.appendChild(item);
   });
 
-  // 🔥 ATUALIZA RESUMO
+  // resumo
   document.getElementById("abertos").innerText = abertos;
   document.getElementById("andamento").innerText = andamento;
-  document.getElementById("vencidos").innerText = vencidos;
+  document.getElementById("fechados").innerText = fechados;
+  document.getElementById("filtrosChamados").style.display = "none";
+
 }
 
 // CHAT com o técnico
@@ -815,6 +1089,105 @@ function animate() {
 }
 
 animate();
+
+function filtrarChamados(tipo = null) {
+
+  // 🔥 pega texto da busca
+  const texto = document.getElementById("inputBusca")?.value.toLowerCase() || "";
+
+  // 🔥 começa com todos
+  let filtrados = chamadosGlobal;
+
+  // 🔥 aplica filtro por status (botões)
+  if (tipo && tipo !== "todos") {
+    filtrados = filtrados.filter(c =>
+      c.status.toLowerCase() === tipo
+    );
+  }
+
+  // 🔥 aplica busca (texto)
+  filtrados = filtrados.filter(c =>
+    (c.titulo || "").toLowerCase().includes(texto) ||
+    (c.descricao || "").toLowerCase().includes(texto) ||
+    (c.numero || "").toLowerCase().includes(texto)
+  );
+
+  mostrarTodosChamados(filtrados);
+
+  // 🔥 botão ativo (se clicado)
+  if (tipo) {
+    document.querySelectorAll(".filtros button").forEach(btn => {
+      btn.classList.remove("active");
+    });
+
+    event?.target?.classList.add("active");
+  }
+}
+
+async function assumirChamado(id) {
+
+  const token = localStorage.getItem("token");
+
+  await fetch("/chamados/" + id + "/assumir", {
+    method: "PUT",
+    headers: { Authorization: "Bearer " + token }
+  });
+
+  carregarChamados();
+}
+
+function mostrarBusca(mostrar) {
+  const busca = document.getElementById("buscaContainer");
+  if (!busca) return;
+
+  busca.style.display = mostrar ? "block" : "none";
+}
+
+
+function mostrarFiltros(mostrar) {
+  const filtros = document.querySelector(".filtros");
+  if (!filtros) return;
+
+  filtros.style.display = mostrar ? "flex" : "none";
+}
+
+function filtrarUsuarios() {
+  const texto = document.getElementById("inputBuscaUsuario").value.toLowerCase();
+
+  const filtrados = usuariosGlobal.filter(u =>
+    (u.nome || "").toLowerCase().includes(texto) ||
+    (u.email || "").toLowerCase().includes(texto)
+  );
+
+  mostrarUsuarios(filtrados);
+}
+
+function mostrarUsuarios(usuarios) {
+  const div = document.getElementById("listaUsuarios");
+  div.innerHTML = "";
+
+  usuarios.forEach(u => {
+    const item = document.createElement("div");
+    item.classList.add("card");
+
+    item.innerHTML = `
+      <strong>${u.nome}</strong><br>
+      ${u.email}<br>
+      <small>Tipo: ${u.role}</small><br>
+
+      ${
+        meuRole === "admin" && u.role === "usuario"
+          ? `<button onclick="promover('${u._id}')">
+               Promover para técnico
+             </button>`
+          : ""
+      }
+    `;
+
+    div.appendChild(item);
+  });
+}
+
 </script>
 
 </body>

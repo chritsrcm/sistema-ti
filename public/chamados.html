@@ -185,6 +185,23 @@ button.loading {
     <label>Descrição</label>
     <textarea id="descricao" placeholder="Descreva o problema..." rows="4"></textarea>
   </div>
+<!-- EMPRESA -->
+<div class="input-group">
+  <label>Empresa</label>
+  <input type="text" id="empresa" placeholder="Nome da empresa">
+</div>
+
+<!-- SETOR -->
+<div class="input-group">
+  <label>Setor</label>
+  <input type="text" id="setor" placeholder="Ex: Financeiro, TI, RH">
+</div>
+
+<!-- ANEXO -->
+<div class="input-group">
+  <label>Anexo</label>
+  <input type="file" id="arquivo">
+</div>
 
   <!-- BOTÃO -->
   <button id="btn" onclick="criarChamado()">Enviar Chamado</button>
@@ -198,10 +215,19 @@ button.loading {
 </div>
 
 <script>
+
+function gerarNumeroChamado() {
+  return "CH-" + Date.now();
+}
+
 async function criarChamado() {
+
   const titulo = document.getElementById("titulo").value;
   const descricao = document.getElementById("descricao").value;
-  const categoria = document.getElementById("categoria").value; // 🔥 AQUI
+  const categoria = document.getElementById("categoria").value;
+  const empresa = document.getElementById("empresa").value;
+  const setor = document.getElementById("setor").value;
+  const arquivo = document.getElementById("arquivo").files[0];
 
   const token = localStorage.getItem("token");
   const msg = document.getElementById("msg");
@@ -215,19 +241,25 @@ async function criarChamado() {
   btn.innerText = "Enviando...";
   btn.classList.add("loading");
 
+  const formData = new FormData();
+
+  formData.append("titulo", titulo);
+  formData.append("descricao", descricao);
+  formData.append("categoria", categoria || "Outro");
+  formData.append("empresa", empresa);
+  formData.append("setor", setor);
+  formData.append("numero", gerarNumeroChamado());
+
+  if (arquivo) {
+    formData.append("arquivo", arquivo);
+  }
+
   const res = await fetch("/chamados", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
       "Authorization": "Bearer " + token
     },
-
-    //  AQUI VAI O JSON do chamado
-    body: JSON.stringify({
-      titulo,
-      descricao,
-      categoria
-    })
+    body: formData
   });
 
   const data = await res.json();

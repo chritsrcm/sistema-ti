@@ -136,3 +136,229 @@ button {
 button:hover {
   background: #1d4ed8;
 }
+.filtros {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: 0.3s ease;
+}
+
+.filtros.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.filtros button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #1e293b;
+
+  background: rgba(2,6,23,0.8);
+  color: #cbd5f5;
+
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.filtros button:hover {
+  background: #3b82f6;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.filtros button.active {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: white;
+  border: none;
+  box-shadow: 0 5px 15px rgba(59,130,246,0.3);
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  background: #020617;
+  border-radius: 12px;
+  border: 1px solid #1e293b;
+  color: #e2e8f0;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.badges {
+  display: flex;
+  gap: 8px;
+}
+
+.badge {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* INFO */
+.info {
+  margin-top: 15px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  font-size: 14px;
+}
+
+/* DESCRIÇÃO */
+.descricao-box {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  background: #020617;
+  border: 1px solid #1e293b;
+}
+
+/* ANEXO */
+.anexo-box {
+  margin-top: 15px;
+}
+
+/* BOTÕES */
+.botoes {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.botoes button {
+  background: #1e293b;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+}
+
+.botoes button:hover {
+  background: #334155;
+}
+
+/* AÇÕES */
+/* CONTAINER DE AÇÕES (TODOS OS BOTÕES) */
+.acoes {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+/* GARANTE QUE BOTÕES DINÂMICOS FIQUEM ALINHADOS */
+#acoes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* BOTÕES PADRÃO */
+.acoes button,
+.botoes button {
+  background: #1e293b;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s;
+}
+
+.acoes button:hover,
+.botoes button:hover {
+  background: #334155;
+}
+
+/* ================= CHAT DO DETALHE ================= */
+
+#chatContainer {
+  margin-top: 40px;
+  border-radius: 12px;
+  border: 1px solid #1e293b;
+  background: #020617;
+
+  width: 100%;            /* 🔥 ocupa toda largura */
+  max-width: 100%;        /* 🔥 não fica estreito */
+  
+  display: flex;
+  flex-direction: column;
+  height: 340px;
+}
+
+/* TÍTULO */
+#chatContainer h3 {
+  text-align: center;
+  margin-bottom: 10px;
+  opacity: 0.8;
+}
+
+/* ÁREA DAS MENSAGENS */
+#mensagens {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+}
+
+/* INPUT EMBAIXO FIXO */
+.chat-input {
+  display: auto;
+  gap: 10px;
+
+  padding: 22px;
+ 
+
+  margin: -25px; /* 🔥 remove espaço */
+}
+
+.chat-input input {
+  flex: 1;
+  height: 45px;
+}
+
+.chat-input button {
+  height: 45px;
+  padding: 10px
+}
+
+/* SCROLL BONITO */
+#mensagens::-webkit-scrollbar {
+  width: 6px;
+}
+
+#mensagens::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+.busca {
+  margin-bottom: 15px;
+}
+
+.busca input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #1e293b;
+  background: #020617;
+  color: white;
+}
+
+
+#buscaContainer {
+  display: none;
+}

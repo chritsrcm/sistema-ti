@@ -135,6 +135,7 @@
   z-index: -1;
 }
 
+
   </style>
 </head>
 
@@ -144,15 +145,41 @@
 
 <div class="container">
 
-  <h2 id="titulo"></h2>
-  <p id="descricao"></p>
-  <p id="categoria"></p>
-  <p id="status"></p>
+  <!-- HEADER -->
+  <div class="header">
+    <h2 id="titulo"></h2>
 
-  <div id="acoes"></div>
+    <div class="badges">
+      <span id="status" class="badge"></span>
+      <span id="prioridade" class="badge"></span>
+    </div>
+  </div>
 
-  <button onclick="abrirChat()">💬 Chat com o técnico</button>
-  <button onclick="voltar()">Voltar</button>
+  <!-- INFO -->
+  <div class="info">
+    <p>🔢 <strong id="numero"></strong></p>
+    <p>🏢 <strong id="empresa"></strong></p>
+    <p>🏢 <strong id="setor"></strong></p>
+    <p>👨‍💻 <strong id="tecnico"></strong></p>
+    <p>📂 <span id="categoria"></span></p>
+  </div>
+
+  <!-- DESCRIÇÃO -->
+  <div class="descricao-box">
+    <p id="descricao"></p>
+  </div>
+
+  <!-- ANEXO -->
+  <div id="anexo" class="anexo-box"></div>
+
+  <!-- AÇÕES DINÂMICAS -->
+  <div id="acoes" class="acoes"></div>
+
+  <!-- BOTÕES FIXOS -->
+  <div class="acoes">
+    <button onclick="abrirChat()">💬 Chat</button>
+    <button onclick="voltar()">⬅ Voltar</button>
+  </div>
 
   <!-- CHAT -->
   <div id="chatContainer" style="display:none;">
@@ -173,7 +200,7 @@
 <!-- NOTIFICAÇÃO -->
 <div id="notificacao">
   <strong id="notifNome">Usuário</strong>
-  <div id="notifTexto" style="font-size:13px; margin-top:4px;"></div>
+  <div id="notifTexto"></div>
 </div>
 
 </body>
@@ -215,7 +242,8 @@ document.addEventListener("DOMContentLoaded", () => {
   carregarChamado();
 });
 
-async function carregarChamado() {
+async function carregarChamado()
+ {
   try {
     const token = localStorage.getItem("token");
     console.log("TOKEN:", token);
@@ -234,7 +262,48 @@ async function carregarChamado() {
     document.getElementById("titulo").innerText = chamadoAtual.titulo;
     document.getElementById("descricao").innerText = chamadoAtual.descricao;
     document.getElementById("categoria").innerText = "Categoria: " + chamadoAtual.categoria;
-    document.getElementById("status").innerText = "Status: " + chamadoAtual.status;
+    const statusEl = document.getElementById("status");
+
+statusEl.innerText = chamadoAtual.status.toUpperCase();
+
+if (chamadoAtual.status === "aberto") {
+  statusEl.style.background = "#22c55e";
+}
+
+if (chamadoAtual.status === "andamento") {
+  statusEl.style.background = "#facc15";
+}
+
+if (chamadoAtual.status === "fechado") {
+  statusEl.style.background = "#ef4444";
+}
+   // 🔥 NOVOS CAMPOS
+document.getElementById("numero").innerText =
+  "Chamado: " + (chamadoAtual.numero || "N/A");
+
+document.getElementById("empresa").innerText =
+  "Empresa: " + (chamadoAtual.empresa || "N/A");
+
+document.getElementById("setor").innerText =
+  "Setor: " + (chamadoAtual.setor || "N/A");
+
+// técnico (com populate)
+const nomeTecnico = chamadoAtual.tecnico?.nome || "Não atribuído";
+
+document.getElementById("tecnico").innerText =
+  "Técnico: " + nomeTecnico;
+
+// anexo
+if (chamadoAtual.arquivo) {
+  document.getElementById("anexo").innerHTML = `
+    📎 <a href="/uploads/${chamadoAtual.arquivo}" download>
+      Baixar arquivo
+    </a>
+  `;
+} else {
+  document.getElementById("anexo").innerText = "Anexo: Nenhum";
+}
+
 
     const perfilRes = await fetch("/perfil", {
       headers: { Authorization: "Bearer " + token }

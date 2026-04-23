@@ -3,10 +3,24 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const path = require("path");
+const multer = require("multer");
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
 
+    cb(null, Date.now() + "-" + file.originalname
+  .replace(/\s/g, "_")
+  .toLowerCase()
+);
+  }
+});
+const upload = multer({ storage });
 const app = express();
 
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 app.use(express.static(path.join(__dirname, "public")));
 
 // BANCO DE DADOS
@@ -115,27 +129,52 @@ app.get("/perfil", auth, async (req, res) => {
 });
 
 // CHAMADOS
-app.post("/chamados", auth, async (req, res) => {
-  const { titulo, descricao, categoria } = req.body;
+app.post("/chamados", auth, upload.single("arquivo"), async (req, res) => {
+
+  const titulo = req.body.titulo;
+  const descricao = req.body.descricao;
+  const categoria = req.body.categoria;
+  const empresa = req.body.empresa;
+  const setor = req.body.setor;
+  const numero = req.body.numero;
 
   const chamado = new Chamado({
     titulo,
     descricao,
     categoria,
+    empresa,
+    setor,
+    numero,
+    arquivo: req.file ? req.file.filename : null,
     usuario: req.user.id
   });
 
   await chamado.save();
-  res.json({ message: "Chamado criado!" });
+
+  res.json({ message: "Chamado criado" });
 });
 
 app.get("/chamados", auth, async (req, res) => {
   let chamados;
 
-  if (req.user.role === "tecnico" || req.user.role === "admin") {
-    chamados = await Chamado.find();
-  } else {
-    chamados = await Chamado.find({ usuario: req.user.id });
+  if (req.user.role === "admin") {
+    chamados = await Chamado.find().populate("tecnico", "nome");
+  }
+
+  else if (req.user.role === "tecnico") {
+  chamados = await Chamado.find({
+    $or: [
+      { tecnico: req.user.id },       // dele
+      { tecnico: null },              // livres
+      { status: "fechado" }           // 🔥 TODOS fechados
+    ]
+  }).populate("tecnico", "nome");
+}
+
+  else {
+    chamados = await Chamado.find({
+      usuario: req.user.id
+    }).populate("tecnico", "nome"); // 🔥 evita erro no front
   }
 
   res.json(chamados);
@@ -249,4 +288,25 @@ user.senha = await bcrypt.hash(novaSenha, 10);
     console.log("ERRO RESET:", err);
     res.status(500).json({ error: "Erro ao resetar senha" });
   }
+});
+
+app.put("/chamados/:id/assumir", auth, async (req, res) => {
+
+  const chamado = await Chamado.findById(req.params.id);
+
+  if (!chamado) {
+    return res.status(404).json({ error: "Chamado não encontrado" });
+  }
+
+  // 🔥 só técnico ou admin pode assumir
+  if (req.user.role !== "tecnico" && req.user.role !== "admin") {
+    return res.status(403).json({ error: "Sem permissão" });
+  }
+
+  chamado.tecnico = req.user.id;
+  chamado.status = "andamento";
+
+  await chamado.save();
+
+  res.json({ message: "Chamado assumido" });
 });
