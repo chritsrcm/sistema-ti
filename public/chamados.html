@@ -6,127 +6,193 @@
 
   <style>
     body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: #0f172a;
-      animation: fadeIn 0.5s ease;
-    }
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 
-    .box {
-      width: 400px;
-      background: #020617;
-      padding: 30px;
-      border-radius: 12px;
-      border: 1px solid #1e293b;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-    }
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  overflow: hidden;
+}
 
-    .box h2 {
-      margin-bottom: 20px;
-      font-weight: 600;
-    }
+/* canvas fundo */
+#bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
 
-    .input-group {
-      margin-bottom: 15px;
-    }
+/* animação entrada */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-    .input-group input,
-    .input-group textarea {
-      width: 100%;
-      padding: 12px;
-      border-radius: 6px;
-      border: 1px solid #1e293b;
-      background: #020617;
-      color: white;
-    }
+/* caixa */
+.box {
+  width: 420px;
 
-    .input-group textarea {
-      resize: none;
-      height: 100px;
-    }
+  background: rgba(2,6,23,0.9);
+  backdrop-filter: blur(8px);
 
-    .input-group input:focus,
-    .input-group textarea:focus {
-      border-color: #3b82f6;
-      outline: none;
-    }
+  padding: 30px;
+  border-radius: 14px;
+  border: 1px solid #1e293b;
 
-    button {
-      width: 100%;
-      padding: 12px;
-      border-radius: 6px;
-      border: none;
-      background: #2563eb;
-      font-weight: bold;
-      margin-top: 10px;
-      transition: 0.2s;
-    }
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7);
 
-    button:hover {
-      background: #1d4ed8;
-    }
+  animation: fadeIn 0.5s ease;
+}
 
-    button.loading {
-      background: #1e293b;
-      cursor: not-allowed;
-    }
+.box h2 {
+  margin-bottom: 20px;
+  font-weight: 600;
+  text-align: center;
+}
 
-    .voltar {
-      background: transparent;
-      border: 1px solid #1e293b;
-    }
+/* inputs */
+.input-group {
+  margin-bottom: 15px;
+}
 
-    .voltar:hover {
-      background: #1e293b;
-    }
+.input-group label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 5px;
+  color: #94a3b8;
+}
 
-    #msg {
-      margin-top: 10px;
-      font-size: 14px;
-      text-align: center;
-    }
+.input-group input,
+.input-group textarea,
+.input-group select {
+  width: 100%;
+  padding: 12px;
+
+  border-radius: 8px;
+  border: 1px solid #1e293b;
+
+  background: #020617;
+  color: white;
+
+  transition: 0.2s;
+}
+
+/* textarea */
+.input-group textarea {
+  resize: none;
+  height: 100px;
+}
+
+/* foco bonito */
+.input-group input:focus,
+.input-group textarea:focus,
+.input-group select:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+}
+
+/* botão principal */
+button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: white;
+  font-weight: bold;
+
+  margin-top: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+/* loading */
+button.loading {
+  background: #1e293b;
+  cursor: not-allowed;
+}
+
+/* botão voltar */
+.voltar {
+  background: transparent;
+  border: 1px solid #1e293b;
+}
+
+.voltar:hover {
+  background: #1e293b;
+}
+
+/* mensagem */
+#msg {
+  margin-top: 10px;
+  font-size: 14px;
+  text-align: center;
+  color: #ef4444;
+}
+
+#bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
   </style>
 
 </head>
 <body>
 
+<canvas id="bg"></canvas>
+
 <div class="box">
 
   <h2>Novo Chamado</h2>
 
+  <!-- TÍTULO -->
   <div class="input-group">
-    <input type="text" id="titulo" placeholder="Título do problema">
+    <label>Título</label>
+    <input type="text" id="titulo" placeholder="Digite o título do problema">
   </div>
 
+  <!-- CATEGORIA -->
   <div class="input-group">
-  <input type="text" id="titulo" placeholder="Título do problema">
-</div>
+    <label>Categoria</label>
+    <select id="categoria">
+      <option value="">Selecione uma categoria</option>
+      <option value="Hardware">Hardware</option>
+      <option value="Software">Software</option>
+      <option value="Rede">Rede</option>
+      <option value="Impressora">Impressora</option>
+      <option value="Outro">Outro</option>
+    </select>
+  </div>
 
-<div class="input-group">
-  <textarea id="descricao" placeholder="Descreva o problema..."></textarea>
-</div>
+  <!-- DESCRIÇÃO -->
+  <div class="input-group">
+    <label>Descrição</label>
+    <textarea id="descricao" placeholder="Descreva o problema..." rows="4"></textarea>
+  </div>
 
-<div class="input-group">
-  <select id="categoria">
-    <option value="Hardware">Hardware</option>
-    <option value="Software">Software</option>
-    <option value="Rede">Rede</option>
-    <option value="Impressora">Impressora</option>
-    <option value="Outro">Outro</option>
-  </select>
-</div>
-
+  <!-- BOTÃO -->
   <button id="btn" onclick="criarChamado()">Enviar Chamado</button>
 
+  <!-- MENSAGEM -->
   <p id="msg"></p>
 
+  <!-- VOLTAR -->
   <button class="voltar" onclick="voltar()">Voltar</button>
 
 </div>
@@ -184,37 +250,51 @@ function voltar() {
   window.location.href = "dashboard.html";
 }
 
-const ChamadoSchema = new mongoose.Schema({
-  titulo: String,
-  descricao: String,
 
-  categoria: String,
 
-  status: {
-    type: String,
-    default: "aberto"
-  },
+const canvas = document.getElementById("bg");
+const ctx = canvas.getContext("2d");
 
-  criadoEm: {
-    type: Date,
-    default: Date.now
-  },
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-  usuario: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
-  },
+let stars = [];
 
-  mensagens: [
-    {
-      autor: String,
-      texto: String,
-      data: {
-        type: Date,
-        default: Date.now
-      }
+for (let i = 0; i < 120; i++) {
+  stars.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    size: Math.random() * 1.5,
+    speed: Math.random() * 0.3
+  });
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  stars.forEach(star => {
+    star.y += star.speed;
+
+    if (star.y > canvas.height) {
+      star.y = 0;
+      star.x = Math.random() * canvas.width;
     }
-  ]
+
+    ctx.beginPath();
+    ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255,255,255,0.7)";
+    ctx.fill();
+  });
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+/* responsivo */
+window.addEventListener("resize", () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 });
 
 </script>

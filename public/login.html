@@ -9,131 +9,255 @@
   <link rel="stylesheet" href="style.css">
 
   <style>
-    body {
-      background: radial-gradient(circle at top, #020617, #000);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      animation: fadeIn 1s ease;
-    }
+ body {
+  margin: 0;
+  height: 100vh;
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(1.02); }
-      to { opacity: 1; transform: scale(1); }
-    }
+  display: flex;
+  justify-content: center;  /* horizontal */
+  align-items: center;      /* vertical */
 
-    .login-box {
-      width: 350px;
-      background: rgba(2,6,23,0.95);
-      padding: 35px;
-      border-radius: 12px;
-      border: 1px solid #1e293b;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.7);
-    }
+  overflow: hidden;
+  font-family: 'Segoe UI', sans-serif;
 
-    .login-box h2 {
-      margin-bottom: 25px;
-      text-align: center;
-      font-weight: 600;
-    }
+  background: radial-gradient(circle at top, #0f172a, #020617);
+}
 
-    .input-group {
-      position: relative;
-      margin-bottom: 15px;
-    }
+/* canvas no fundo */
+#bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
 
-    .input-group i {
-      position: absolute;
-      top: 12px;
-      left: 10px;
-      color: #64748b;
-    }
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
-    .input-group input {
-      width: 100%;
-      padding: 10px 10px 10px 35px;
-      border-radius: 6px;
-      border: 1px solid #1e293b;
-      background: #020617;
-      color: white;
-    }
+  height: 100vh;
+  gap: 30px;
+}
 
-    .input-group input:focus {
-      border-color: #3b82f6;
-      outline: none;
-    }
+/* LOGO */
+.logo {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: 4px;
 
-    button {
-      width: 100%;
-      margin-top: 10px;
-      padding: 12px;
-      border-radius: 6px;
-      border: none;
-      background: #2563eb;
-      font-weight: bold;
-      transition: 0.2s;
-    }
+  background: linear-gradient(90deg, #3b82f6, #9333ea);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 
-    button:hover {
-      background: #1d4ed8;
-    }
+  text-align: center;
+}
 
-    button.loading {
-      background: #1e293b;
-      cursor: not-allowed;
-    }
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-    .links {
-      margin-top: 15px;
-      font-size: 14px;
-      text-align: center;
-    }
+/* mantém seu login acima */
+.login-box {
+  position: relative;
+  z-index: 2;
+}
 
-    .links a {
-      color: #3b82f6;
-      text-decoration: none;
-    }
 
-    .links a:hover {
-      text-decoration: underline;
-    }
+/* efeito glow */
+body::before {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: #3b82f6;
+  filter: blur(150px);
+  opacity: 0.2;
+  top: -100px;
+  left: -100px;
+}
 
-    #msg {
-      margin-top: 10px;
-      text-align: center;
-      font-size: 14px;
-      color: #ef4444;
-    }
-  </style>
+body::after {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: #9333ea;
+  filter: blur(150px);
+  opacity: 0.2;
+  bottom: -100px;
+  right: -100px;
+}
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(1.03); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+ .login-box {
+  width: 350px;
+  background: rgba(2, 6, 23, 0.95);
+  padding: 35px;
+  border-radius: 14px;
+  border: 1px solid #1e293b;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+}
+
+.login-box h2 {
+  margin-bottom: 25px;
+  text-align: center;
+  color: white;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 40px 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #1e293b;
+  background: #020617;
+  color: white;
+  transition: 0.2s;
+}
+
+.input-group input::placeholder {
+  color: #64748b;
+}
+
+.input-group input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+}
+
+/* 👁️ olho */
+.input-group span {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #64748b;
+}
+
+.input-group span:hover {
+  color: #3b82f6;
+}
+
+/* checkbox + links alinhados */
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  margin: 10px 0 15px;
+}
+
+.options label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #cbd5f5;
+}
+
+.options a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.options a:hover {
+  text-decoration: underline;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+}
+
+.links {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.links a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+  
+</style>
 
 </head>
+
+<canvas id="bg"></canvas> <!-- 🔥 ESSENCIAL -->
+
 <body>
 
-<div class="login-box">
+<canvas id="bg"></canvas>
 
-  <h2>Entrar</h2>
+<div class="wrapper">
 
-  <div class="input-group">
-    <i class="fa fa-envelope"></i>
-    <input type="email" id="email" placeholder="Email">
-  </div>
+  <h1 class="logo">CJSISTEMAS</h1>
 
-  <div class="input-group">
-    <i class="fa fa-lock"></i>
-    <input type="password" id="senha" placeholder="Senha">
-  </div>
+  <div class="login-box">
 
-  <button id="btn" onclick="login()">Entrar</button>
+    <h2>Login</h2>
 
-  <p id="msg"></p>
+    <div class="input-group">
+      <input type="email" id="email" placeholder="Email">
+    </div>
 
-  <div class="links">
-    <p><a href="reset.html">Esqueci minha senha</a></p>
-    <p>Não tem conta? <a href="register.html">Criar conta</a></p>
+    <div class="input-group">
+      <input type="password" id="senha" placeholder="Senha">
+      <span onclick="toggleSenha()">👁️</span>
+    </div>
+
+    <div class="options">
+      <label><input type="checkbox"> lembrar</label>
+      <a href="reset.html">esqueci senha</a>
+    </div>
+
+    <button id="btn" onclick="login()">Entrar</button>
+
+    <p id="msg"></p>
+
+    <div class="links">
+      <p>Não tem conta? <a href="register.html">Criar conta</a></p>
+    </div>
+
   </div>
 
 </div>
+
+</body>
 
 <script>
 async function login() {
@@ -172,6 +296,52 @@ async function login() {
     window.location.href = "dashboard.html";
   }, 400);
 }
+
+function toggleSenha() {
+  const input = document.getElementById("senha");
+  input.type = input.type === "password" ? "text" : "password";
+}
+
+
+const canvas = document.getElementById("bg");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+for (let i = 0; i < 80; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    size: Math.random() * 2,
+    speedX: (Math.random() - 0.5) * 0.5,
+    speedY: (Math.random() - 0.5) * 0.5
+  });
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  particles.forEach(p => {
+    p.x += p.speedX;
+    p.y += p.speedY;
+
+    if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+    if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fillStyle = "#3b82f6";
+    ctx.fill();
+  });
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
 </script>
 
 </body>

@@ -23,21 +23,34 @@ async function resetar() {
   const senha = document.getElementById("senha").value;
   const msg = document.getElementById("msg");
 
-  const res = await fetch("/reset-password", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ email, novaSenha: senha })
-  });
-
-  const data = await res.json();
-
-  if (res.status !== 200) {
-    msg.innerText = data.error;
+  if (!email || !senha) {
+    msg.innerText = "Preencha todos os campos";
     return;
   }
 
-  msg.innerText = "Senha atualizada!";
-  setTimeout(() => window.location.href = "login.html", 1000);
+  try {
+    const res = await fetch("/reset-password", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ email, novaSenha: senha })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      msg.innerText = data.error || "Erro ao atualizar";
+      return;
+    }
+
+    msg.innerText = "Senha atualizada!";
+
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 1000);
+
+  } catch (err) {
+    msg.innerText = "Erro ao conectar com o servidor";
+  }
 }
 </script>
 

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Detalhe do Chamado</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      color: white;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+
+      background: rgba(2,6,23,0.9);
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #94a3b8;
+      margin: 5px 0;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: #1e293b;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #3b82f6;
+    }
+
+    /* CHAT */
+    #chatContainer {
+      margin-top: 20px;
+      border-top: 1px solid #1e293b;
+      padding-top: 15px;
+    }
+
+    #mensagens {
+      background: #020617;
+      padding: 10px;
+      border-radius: 10px;
+      height: 220px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* mensagens */
+    .msg {
+      padding: 8px 10px;
+      border-radius: 10px;
+      max-width: 70%;
+      font-size: 13px;
+    }
+
+    .msg-me {
+      background: #3b82f6;
+      align-self: flex-end;
+      color: white;
+    }
+
+    .msg-other {
+      background: #1e293b;
+      align-self: flex-start;
+      color: #e2e8f0;
+    }
+
+    .chat-input {
+      display: flex;
+      gap: 10px;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: #1e293b;
+      color: white;
+    }
+
+    .chat-input button {
+      background: #3b82f6;
+    }
+
+    .chat-input button:hover {
+      background: #2563eb;
+    }
+
+    /* notificação */
+    #notificacao {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #1e293b;
+      color: white;
+      padding: 14px 18px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      display: none;
+      z-index: 999;
+      min-width: 250px;
+      transform: translateY(-20px);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    #bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+  </style>
+</head>
+
+<body>
+
+<canvas id="bg"></canvas>
+
+<div class="container">
+
+  <h2 id="titulo"></h2>
+  <p id="descricao"></p>
+  <p id="categoria"></p>
+  <p id="status"></p>
+
+  <div id="acoes"></div>
+
+  <button onclick="abrirChat()">💬 Chat com o técnico</button>
+  <button onclick="voltar()">Voltar</button>
+
+  <!-- CHAT -->
+  <div id="chatContainer" style="display:none;">
+
+    <h3>💬 Conversa</h3>
+
+    <div id="mensagens"></div>
+
+    <div class="chat-input">
+      <input type="text" id="msg" placeholder="Digite sua mensagem...">
+      <button onclick="enviar()">Enviar</button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- NOTIFICAÇÃO -->
+<div id="notificacao">
+  <strong id="notifNome">Usuário</strong>
+  <div id="notifTexto" style="font-size:13px; margin-top:4px;"></div>
+</div>
+
+</body>
+</html>
+
+<script>
+let meuId = null;
+let chamadoAtual = null;
+let ultimoIdMensagem = null;
+let audioLiberado = false;
+let qtdMensagensAnterior = 0;
+
+const urlParams = new URLSearchParams(window.location.search);
+const id = urlParams.get("id");
+
+
+document.addEventListener("click", () => {
+  audioLiberado = true;
+});
+
+const audio = new Audio("https://www.soundjay.com/buttons/sounds/button-3.mp3");
+
+function tocarSom() {
+  if (!audioLiberado) return;
+
+  audio.currentTime = 0;
+  audio.play().catch(() => {});
+}
+
+function voltar() {
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    window.location.href = "/dashboard.html";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  carregarChamado();
+});
+
+async function carregarChamado() {
+  try {
+    const token = localStorage.getItem("token");
+    console.log("TOKEN:", token);
+
+    const res = await fetch("/chamados", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const chamados = await res.json();
+
+    if (!Array.isArray(chamados)) return;
+
+    chamadoAtual = chamados.find(c => String(c._id) === String(id));
+    if (!chamadoAtual) return;
+
+    document.getElementById("titulo").innerText = chamadoAtual.titulo;
+    document.getElementById("descricao").innerText = chamadoAtual.descricao;
+    document.getElementById("categoria").innerText = "Categoria: " + chamadoAtual.categoria;
+    document.getElementById("status").innerText = "Status: " + chamadoAtual.status;
+
+    const perfilRes = await fetch("/perfil", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const user = await perfilRes.json();
+    meuId = user._id;
+
+    // 🔥 inicializa ID da última mensagem
+    if (chamadoAtual.mensagens?.length) {
+  const ultima = chamadoAtual.mensagens[chamadoAtual.mensagens.length - 1];
+  ultimoIdMensagem = ultima.texto + ultima.autor;
+}
+
+    // 🔥 BOTÕES
+    const acoes = document.getElementById("acoes");
+    acoes.innerHTML = "";
+
+    if (user.role === "tecnico" || user.role === "admin") {
+
+      if (chamadoAtual.status === "aberto") {
+        acoes.innerHTML += `
+          <button onclick="mudarStatus('andamento')">▶️ Iniciar Chamado</button>
+        `;
+      }
+
+      if (chamadoAtual.status !== "fechado") {
+        acoes.innerHTML += `
+          <button onclick="mudarStatus('fechado')">✅ Fechar Chamado</button>
+        `;
+      }
+    }
+
+    renderMensagens();
+
+  } catch (err) {
+    console.log("Erro:", err);
+  }
+
+  qtdMensagensAnterior = chamadoAtual.mensagens?.length || 0;
+}
+
+function renderMensagens() {
+  const div = document.getElementById("mensagens");
+  div.innerHTML = "";
+
+  if (!chamadoAtual?.mensagens) return;
+
+  chamadoAtual.mensagens.forEach(m => {
+
+    const hora = new Date(m.data).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    const wrapper = document.createElement("div");
+    const el = document.createElement("div");
+
+    const minhaMensagem = String(m.autor) === String(meuId);
+
+    wrapper.style.display = "flex";
+    wrapper.style.justifyContent = minhaMensagem ? "flex-end" : "flex-start";
+    wrapper.style.marginBottom = "8px";
+
+    el.style.maxWidth = "60%";
+    el.style.padding = "10px";
+    el.style.borderRadius = "14px";
+    el.style.fontSize = "13px";
+    el.style.wordBreak = "break-word";
+
+    el.style.background = minhaMensagem ? "#2563eb" : "#1e293b";
+    el.style.color = minhaMensagem ? "white" : "#e2e8f0";
+
+    el.innerHTML = `
+      <div style="font-size:11px; opacity:0.6;">
+        ${m.nome || "Usuário"}
+      </div>
+      <div style="margin-top:3px;">${m.texto}</div>
+      <div style="font-size:10px; opacity:0.5; margin-top:4px; text-align:right;">
+        ${hora}
+      </div>
+    `;
+
+    wrapper.appendChild(el);
+    div.appendChild(wrapper);
+  });
+
+  div.scrollTop = div.scrollHeight;
+}
+
+async function enviar() {
+  const texto = document.getElementById("msg").value;
+  const token = localStorage.getItem("token");
+
+  if (!texto) return;
+
+  await fetch("/chamados/" + id + "/mensagem", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token
+    },
+    body: JSON.stringify({ texto })
+  });
+
+  document.getElementById("msg").value = "";
+  await carregarChamado();
+}
+
+async function mudarStatus(status) {
+  const token = localStorage.getItem("token");
+
+  await fetch("/chamados/" + id + "/status", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token
+    },
+    body: JSON.stringify({ status })
+  });
+
+  alert("Status atualizado!");
+  window.location.href = "dashboard.html";
+}
+
+// 🔄 AUTO UPDATE
+setInterval(async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch("/chamados", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const chamados = await res.json();
+
+    const atualizado = chamados.find(c => String(c._id) === String(id));
+    if (!atualizado) return;
+
+    const mensagens = atualizado.mensagens || [];
+
+    console.log("📡 Técnico recebeu:", mensagens.length);
+
+    // 🔥 SE MUDOU
+    if (!chamadoAtual || mensagens.length !== (chamadoAtual.mensagens?.length || 0)) {
+
+  const ultimaMsg = mensagens[mensagens.length - 1];
+
+  console.log("🆕 Nova detectada:", ultimaMsg);
+
+  if (ultimaMsg && String(ultimaMsg.autor) !== String(meuId)) {
+    tocarSom();
+    mostrarNotificacao(ultimaMsg.nome, ultimaMsg.texto);
+    console.log("🔔 NOTIFICOU!");
+  }
+
+  chamadoAtual = atualizado;
+  renderMensagens();
+}
+
+  } catch (e) {
+    console.log("Erro:", e);
+  }
+
+  
+
+}, 2000);
+
+function abrirChat() {
+  const chat = document.getElementById("chatContainer");
+  const btn = event.target;
+
+  if (chat.style.display === "none") {
+    chat.style.display = "block";
+    btn.innerText = "❌ Fechar chat";
+  } else {
+    chat.style.display = "none";
+    btn.innerText = "💬 Chat com o técnico";
+  }
+}
+
+function mostrarNotificacao(nome, texto) {
+  const box = document.getElementById("notificacao");
+  const nomeEl = document.getElementById("notifNome");
+  const textoEl = document.getElementById("notifTexto");
+
+  nomeEl.innerText = nome || "Usuário";
+  textoEl.innerText = texto || "Nova mensagem";
+
+  box.style.display = "block";
+
+  setTimeout(() => {
+    box.style.opacity = "1";
+    box.style.transform = "translateY(0)";
+  }, 10);
+
+  setTimeout(() => {
+    box.style.opacity = "0";
+    box.style.transform = "translateY(-20px)";
+
+    setTimeout(() => {
+      box.style.display = "none";
+    }, 300);
+  }, 3000);
+}
+
+window.onload = () => {
+
+  const canvas = document.getElementById("bg");
+  const ctx = canvas.getContext("2d");
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  resize();
+
+  let stars = [];
+
+  for (let i = 0; i < 120; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: Math.random() * 1.5,
+      speed: Math.random() * 0.3
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    stars.forEach(star => {
+      star.y += star.speed;
+
+      if (star.y > canvas.height) {
+        star.y = 0;
+        star.x = Math.random() * canvas.width;
+      }
+
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,255,255,0.7)";
+      ctx.fill();
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  window.addEventListener("resize", resize);
+};
+</script>
+
+</script>
+
+</body>
+</html>

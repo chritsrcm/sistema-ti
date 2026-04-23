@@ -141,20 +141,45 @@ app.get("/chamados", auth, async (req, res) => {
   res.json(chamados);
 });
 
+// 💬 ENVIAR MENSAGEM NO CHAMADO
 app.post("/chamados/:id/mensagem", auth, async (req, res) => {
-  const chamado = await Chamado.findById(req.params.id);
+  try {
+    const { texto } = req.body;
 
-  const user = await User.findById(req.user.id);
+    if (!texto) {
+      return res.status(400).json({ error: "Mensagem vazia" });
+    }
 
-chamado.mensagens.push({
-  autor: req.user.role,
-  nome: user.nome, // 🔥 NOME AQUI
-  texto
+    const chamado = await Chamado.findById(req.params.id);
+
+    if (!chamado) {
+      return res.status(404).json({ error: "Chamado não encontrado" });
+    }
+
+    // 🔥 busca usuário com segurança
+    const user = await User.findById(req.user.id);
+
+   chamado.mensagens.push({
+  texto,
+  autor: String(req.user.id),
+  nome: user.nome,
+  data: new Date()
 });
-  await chamado.save();
 
-  res.json({ message: "Mensagem enviada!" });
-});
+    await chamado.save();
+
+    console.log("MENSAGENS:", chamado.mensagens);
+
+const atualizado = await Chamado.findById(req.params.id);
+
+res.json(atualizado);
+
+  } catch (err) {
+    console.log("ERRO CHAT:", err);
+    res.status(500).json({ error: "Erro ao enviar mensagem" });
+  }
+  
+}); 
 
 // Colocar o usuario em lista na aba de user
 app.get("/usuarios", auth, somenteTecnico, async (req, res) => {
@@ -176,4 +201,52 @@ const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log("Servidor rodando...");
+});
+
+//  ALTERAR STATUS DO CHAMADO somente o técnico
+app.put("/chamados/:id/status", auth, async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    // só técnico ou admin
+    if (req.user.role !== "tecnico" && req.user.role !== "admin") {
+      return res.status(403).json({ error: "Sem permissão" });
+    }
+
+    await Chamado.findByIdAndUpdate(req.params.id, { status });
+
+    res.json({ message: "Status atualizado!" });
+
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao atualizar status" });
+  }
+});
+
+app.post("/reset-password", async (req, res) => {
+  try {
+    const { email, novaSenha } = req.body;
+
+    if (!email || !novaSenha) {
+      return res.status(400).json({ error: "Dados inválidos" });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
+
+    // 🔥 atualiza senha
+    const bcrypt = require("bcrypt");
+
+user.senha = await bcrypt.hash(novaSenha, 10);
+
+    await user.save();
+
+    res.json({ message: "Senha atualizada com sucesso" });
+
+  } catch (err) {
+    console.log("ERRO RESET:", err);
+    res.status(500).json({ error: "Erro ao resetar senha" });
+  }
 });

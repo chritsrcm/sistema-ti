@@ -18,6 +18,7 @@ const ChamadoSchema = new mongoose.Schema({
     default: "aberto"
   },
 
+  // 🔥 mantém compatibilidade com seus chamados antigos
   criadoEm: {
     type: Date,
     default: Date.now
@@ -32,12 +33,16 @@ const ChamadoSchema = new mongoose.Schema({
     {
       autor: String,
       texto: String,
+      nome: String,
       data: {
         type: Date,
         default: Date.now
       }
     }
   ]
-});
+
+}, { timestamps: true }); // 🔥 NOVO (PROFISSIONAL)
+
+
 
 module.exports = mongoose.model("Chamado", ChamadoSchema);
