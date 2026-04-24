@@ -3,173 +3,354 @@
 <head>
   <title>Novo Chamado</title>
   <link rel="stylesheet" href="style.css">
-
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      background: radial-gradient(ellipse at top, #1e293b 0%, #0f172a 40%, #020617 100%);
+      overflow-x: hidden;
+      position: relative;
+    }
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+    /* Canvas de fundo */
+    #bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
 
-  background: radial-gradient(circle at top, #0f172a, #020617);
-  overflow: hidden;
-}
+    /* Efeito de brilho sutil no fundo */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.08), transparent 40%),
+                  radial-gradient(circle at 70% 80%, rgba(16, 185, 129, 0.06), transparent 45%);
+      z-index: 0;
+      animation: pulse 15s ease-in-out infinite;
+    }
 
-/* canvas fundo */
-#bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-}
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
 
-/* animação entrada */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    /* Animação de entrada */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(25px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
 
-/* caixa */
-.box {
-  width: 420px;
+    /* Caixa principal */
+    .box {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 480px;
+      background: linear-gradient(145deg, rgba(2,6,23,0.95), rgba(15,23,42,0.9));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 35px;
+      border-radius: 20px;
+      border: 1px solid rgba(30, 41, 59, 0.8);
+      border-top-color: rgba(59, 130, 246, 0.3);
+      box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
 
-  background: rgba(2,6,23,0.9);
-  backdrop-filter: blur(8px);
+    .box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+      border-radius: 0 0 10px 10px;
+    }
 
-  padding: 30px;
-  border-radius: 14px;
-  border: 1px solid #1e293b;
+    .box h2 {
+      margin-bottom: 28px;
+      font-weight: 700;
+      font-size: 22px;
+      text-align: center;
+      color: #f1f5f9;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
 
-  box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    .box h2::before,
+    .box h2::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.4), transparent);
+    }
 
-  animation: fadeIn 0.5s ease;
-}
+    /* Grupos de input */
+    .input-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
 
-.box h2 {
-  margin-bottom: 20px;
-  font-weight: 600;
-  text-align: center;
-}
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #94a3b8;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
 
-/* inputs */
-.input-group {
-  margin-bottom: 15px;
-}
+    .input-group input,
+    .input-group textarea,
+    .input-group select {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(30, 41, 59, 0.9);
+      background: rgba(2, 6, 23, 0.8);
+      color: #e2e8f0;
+      font-size: 15px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      outline: none;
+    }
 
-.input-group label {
-  display: block;
-  font-size: 13px;
-  margin-bottom: 5px;
-  color: #94a3b8;
-}
+    .input-group input::placeholder,
+    .input-group textarea::placeholder {
+      color: #64748b;
+    }
 
-.input-group input,
-.input-group textarea,
-.input-group select {
-  width: 100%;
-  padding: 12px;
+    .input-group textarea {
+      resize: vertical;
+      min-height: 100px;
+      max-height: 200px;
+      line-height: 1.5;
+    }
 
-  border-radius: 8px;
-  border: 1px solid #1e293b;
+    .input-group select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 40px;
+    }
 
-  background: #020617;
-  color: white;
+    /* Estados de foco */
+    .input-group input:focus,
+    .input-group textarea:focus,
+    .input-group select:focus {
+      border-color: #3b82f6;
+      background: rgba(2, 6, 23, 1);
+      box-shadow: 
+        0 0 0 4px rgba(59, 130, 246, 0.15),
+        0 4px 20px rgba(0, 0, 0, 0.3);
+      transform: translateY(-1px);
+    }
 
-  transition: 0.2s;
-}
+    /* Botão principal */
+    button {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      margin-top: 8px;
+      letter-spacing: 0.2px;
+    }
 
-/* textarea */
-.input-group textarea {
-  resize: none;
-  height: 100px;
-}
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
 
-/* foco bonito */
-.input-group input:focus,
-.input-group textarea:focus,
-.input-group select:focus {
-  border-color: #3b82f6;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
-}
+    button:hover::before {
+      left: 100%;
+    }
 
-/* botão principal */
-button {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 10px 30px -10px rgba(59, 130, 246, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
 
-  background: linear-gradient(135deg, #2563eb, #3b82f6);
-  color: white;
-  font-weight: bold;
+    button:active {
+      transform: translateY(0);
+    }
 
-  margin-top: 10px;
-  cursor: pointer;
-  transition: 0.3s;
-}
+    /* Estado de loading */
+    button.loading {
+      background: linear-gradient(135deg, #1e293b, #334155);
+      cursor: wait;
+      opacity: 0.9;
+    }
 
-button:hover {
-  transform: translateY(-1px);
-}
+    button.loading:hover {
+      transform: none;
+      box-shadow: none;
+    }
 
-/* loading */
-button.loading {
-  background: #1e293b;
-  cursor: not-allowed;
-}
+    /* Botão voltar */
+    .voltar {
+      background: transparent;
+      border: 1px solid rgba(30, 41, 59, 0.8);
+      color: #94a3b8;
+      margin-top: 12px;
+      font-weight: 500;
+    }
 
-/* botão voltar */
-.voltar {
-  background: transparent;
-  border: 1px solid #1e293b;
-}
+    .voltar:hover {
+      background: rgba(30, 41, 59, 0.5);
+      color: #e2e8f0;
+      border-color: #475569;
+      transform: translateY(-1px);
+    }
 
-.voltar:hover {
-  background: #1e293b;
-}
+    /* Mensagem de status */
+    #msg {
+      margin-top: 16px;
+      font-size: 14px;
+      text-align: center;
+      color: #f87171;
+      font-weight: 500;
+      min-height: 20px;
+      animation: shake 0.3s ease;
+    }
 
-/* mensagem */
-#msg {
-  margin-top: 10px;
-  font-size: 14px;
-  text-align: center;
-  color: #ef4444;
-}
+    #msg:empty {
+      display: none;
+    }
 
-#bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-}
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    /* Ícone de sucesso na mensagem */
+    #msg.success {
+      color: #34d399;
+      animation: fadeInUp 0.3s ease;
+    }
+
+    /* Responsivo */
+    @media (max-width: 520px) {
+      .box {
+        padding: 28px 24px;
+        border-radius: 16px;
+      }
+      
+      .box h2 {
+        font-size: 20px;
+        margin-bottom: 24px;
+      }
+      
+      .input-group input,
+      .input-group textarea,
+      .input-group select {
+        padding: 12px 14px;
+        font-size: 14px;
+      }
+      
+      button {
+        padding: 13px 18px;
+        font-size: 14px;
+      }
+    }
+
+    /* Acessibilidade: foco visível para teclado */
+    .input-group input:focus-visible,
+    .input-group textarea:focus-visible,
+    .input-group select:focus-visible,
+    button:focus-visible {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+
+    /* Efeito de partículas sutis nos cantos */
+    .box::after {
+      content: '';
+      position: absolute;
+      top: -1px;
+      right: -1px;
+      width: 60px;
+      height: 60px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 0 20px 0 100%;
+      pointer-events: none;
+    }
+
+    .box::before {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: -1px;
+      width: 60px;
+      height: 60px;
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      border-radius: 100% 0 20px 0;
+      pointer-events: none;
+    }
   </style>
-
 </head>
 <body>
 
 <canvas id="bg"></canvas>
 
 <div class="box">
-
-  <h2>Novo Chamado</h2>
+  <h2>✨ Novo Chamado</h2>
 
   <!-- TÍTULO -->
   <div class="input-group">
-    <label>Título</label>
-    <input type="text" id="titulo" placeholder="Digite o título do problema">
+    <label for="titulo">Título</label>
+    <input type="text" id="titulo" placeholder="Ex: Impressora não conecta na rede">
   </div>
 
   <!-- CATEGORIA -->
   <div class="input-group">
-    <label>Categoria</label>
+    <label for="categoria">Categoria</label>
     <select id="categoria">
       <option value="">Selecione uma categoria</option>
       <option value="Hardware">Hardware</option>
@@ -182,38 +363,39 @@ button.loading {
 
   <!-- DESCRIÇÃO -->
   <div class="input-group">
-    <label>Descrição</label>
-    <textarea id="descricao" placeholder="Descreva o problema..." rows="4"></textarea>
+    <label for="descricao">Descrição</label>
+    <textarea id="descricao" placeholder="Descreva detalhadamente o problema..." rows="4"></textarea>
   </div>
-<!-- EMPRESA -->
-<div class="input-group">
-  <label>Empresa</label>
-  <input type="text" id="empresa" placeholder="Nome da empresa">
-</div>
 
-<!-- SETOR -->
-<div class="input-group">
-  <label>Setor</label>
-  <input type="text" id="setor" placeholder="Ex: Financeiro, TI, RH">
-</div>
+  <!-- EMPRESA -->
+  <div class="input-group">
+    <label for="empresa">Empresa</label>
+    <input type="text" id="empresa" placeholder="Nome da empresa">
+  </div>
 
-<!-- ANEXO -->
-<div class="input-group">
-  <label>Anexo</label>
-  <input type="file" id="arquivo">
-</div>
+  <!-- SETOR -->
+  <div class="input-group">
+    <label for="setor">Setor</label>
+    <input type="text" id="setor" placeholder="Ex: Financeiro, TI, RH">
+  </div>
+
+  <!-- ANEXO -->
+  <div class="input-group">
+    <label for="arquivo">Anexo (opcional)</label>
+    <input type="file" id="arquivo" accept="image/*,.pdf,.doc,.docx">
+  </div>
 
   <!-- BOTÃO -->
-  <button id="btn" onclick="criarChamado()">Enviar Chamado</button>
+  <button id="btn" onclick="criarChamado()">🚀 Enviar Chamado</button>
 
   <!-- MENSAGEM -->
   <p id="msg"></p>
 
   <!-- VOLTAR -->
-  <button class="voltar" onclick="voltar()">Voltar</button>
-
+  <button class="voltar" onclick="voltar()">← Voltar para Dashboard</button>
 </div>
 
+<!-- SEU SCRIPT ORIGINAL - ABSOLUTAMENTE INTACTO -->
 <script>
 
 function gerarNumeroChamado() {

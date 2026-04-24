@@ -2,263 +2,513 @@
 <html>
 <head>
   <title>Login</title>
-
-  <!-- ICONES -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
   <link rel="stylesheet" href="style.css">
-
   <style>
- body {
-  margin: 0;
-  height: 100vh;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  display: flex;
-  justify-content: center;  /* horizontal */
-  align-items: center;      /* vertical */
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      background: radial-gradient(ellipse at top, #1e293b 0%, #0f172a 40%, #020617 100%);
+      color: #e2e8f0;
+      position: relative;
+    }
 
-  overflow: hidden;
-  font-family: 'Segoe UI', sans-serif;
+    /* Canvas de fundo */
+    #bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
 
-  background: radial-gradient(circle at top, #0f172a, #020617);
-}
+    /* Efeitos de brilho no fundo */
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.25;
+      z-index: 0;
+      animation: float 8s ease-in-out infinite;
+    }
 
-/* canvas no fundo */
-#bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-}
+    body::before {
+      width: 600px;
+      height: 600px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      top: -150px;
+      left: -150px;
+      animation-delay: 0s;
+    }
 
-.wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+    body::after {
+      width: 500px;
+      height: 500px;
+      background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+      bottom: -120px;
+      right: -120px;
+      animation-delay: -4s;
+    }
 
-  height: 100vh;
-  gap: 30px;
-}
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -20px) scale(1.05); }
+      66% { transform: translate(-20px, 30px) scale(0.95); }
+    }
 
-/* LOGO */
-.logo {
-  font-size: 42px;
-  font-weight: 800;
-  letter-spacing: 4px;
+    /* Wrapper central */
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      gap: 40px;
+      position: relative;
+      z-index: 1;
+      padding: 20px;
+      animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
 
-  background: linear-gradient(90deg, #3b82f6, #9333ea);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-  text-align: center;
-}
+    /* Logo */
+    .logo {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      background: linear-gradient(135deg, #60a5fa, #3b82f6, #8b5cf6, #60a5fa);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientFlow 5s ease infinite;
+      text-align: center;
+      text-shadow: 0 0 40px rgba(59, 130, 246, 0.3);
+      position: relative;
+    }
 
-@keyframes fadeDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+    .logo::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+      border-radius: 2px;
+    }
 
-/* mantém seu login acima */
-.login-box {
-  position: relative;
-  z-index: 2;
-}
+    @keyframes gradientFlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
 
+    /* Caixa de login */
+    .login-box {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 400px;
+      background: linear-gradient(145deg, rgba(2,6,23,0.95), rgba(15,23,42,0.9));
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      padding: 40px 35px;
+      border-radius: 24px;
+      border: 1px solid rgba(30, 41, 59, 0.8);
+      border-top-color: rgba(59, 130, 246, 0.4);
+      box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        0 0 60px rgba(59, 130, 246, 0.1);
+      animation: cardEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+    }
 
-/* efeito glow */
-body::before {
-  content: "";
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  background: #3b82f6;
-  filter: blur(150px);
-  opacity: 0.2;
-  top: -100px;
-  left: -100px;
-}
+    @keyframes cardEnter {
+      from {
+        opacity: 0;
+        transform: scale(0.98) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
 
-body::after {
-  content: "";
-  position: absolute;
-  width: 400px;
-  height: 400px;
-  background: #9333ea;
-  filter: blur(150px);
-  opacity: 0.2;
-  bottom: -100px;
-  right: -100px;
-}
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(1.03); }
-    to { opacity: 1; transform: scale(1); }
-  }
+    .login-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #3b82f6, #8b5cf6, transparent);
+      border-radius: 0 0 12px 12px;
+    }
 
- .login-box {
-  width: 350px;
-  background: rgba(2, 6, 23, 0.95);
-  padding: 35px;
-  border-radius: 14px;
-  border: 1px solid #1e293b;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.7);
-}
+    .login-box h2 {
+      margin: 0 0 28px;
+      text-align: center;
+      color: #f1f5f9;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      position: relative;
+    }
 
-.login-box h2 {
-  margin-bottom: 25px;
-  text-align: center;
-  color: white;
-}
+    .login-box h2::after {
+      content: '';
+      position: absolute;
+      bottom: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 2px;
+      background: rgba(59, 130, 246, 0.5);
+      border-radius: 2px;
+    }
 
-.input-group {
-  position: relative;
-  margin-bottom: 15px;
-}
+    /* Inputs */
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
 
-.input-group input {
-  width: 100%;
-  padding: 12px 40px 12px 15px;
-  border-radius: 8px;
-  border: 1px solid #1e293b;
-  background: #020617;
-  color: white;
-  transition: 0.2s;
-}
+    .input-group input {
+      width: 100%;
+      padding: 14px 45px 14px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(30, 41, 59, 0.9);
+      background: rgba(2, 6, 23, 0.8);
+      color: #e2e8f0;
+      font-size: 15px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      outline: none;
+    }
 
-.input-group input::placeholder {
-  color: #64748b;
-}
+    .input-group input::placeholder {
+      color: #64748b;
+      font-weight: 400;
+    }
 
-.input-group input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
-}
+    .input-group input:focus {
+      border-color: #3b82f6;
+      background: rgba(2, 6, 23, 1);
+      box-shadow: 
+        0 0 0 4px rgba(59, 130, 246, 0.15),
+        0 8px 25px rgba(0, 0, 0, 0.3);
+      transform: translateY(-1px);
+    }
 
-/* 👁️ olho */
-.input-group span {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: #64748b;
-}
+    /* Ícone do olho */
+    .input-group span {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #64748b;
+      font-size: 18px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+    }
 
-.input-group span:hover {
-  color: #3b82f6;
-}
+    .input-group span:hover {
+      color: #3b82f6;
+      background: rgba(59, 130, 246, 0.1);
+    }
 
-/* checkbox + links alinhados */
-.options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 13px;
-  margin: 10px 0 15px;
-}
+    /* Options row */
+    .options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      margin: 8px 0 22px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
 
-.options label {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: #cbd5f5;
-}
+    .options label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #94a3b8;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.2s;
+    }
 
-.options a {
-  color: #3b82f6;
-  text-decoration: none;
-}
+    .options label:hover {
+      color: #cbd5e1;
+    }
 
-.options a:hover {
-  text-decoration: underline;
-}
+    .options input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #3b82f6;
+      cursor: pointer;
+    }
 
-button {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  background: linear-gradient(135deg, #2563eb, #3b82f6);
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s;
-}
+    .options a {
+      color: #60a5fa;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+      position: relative;
+    }
 
-button:hover {
-  transform: translateY(-1px);
-  background: linear-gradient(135deg, #1d4ed8, #2563eb);
-}
+    .options a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: currentColor;
+      transition: width 0.2s;
+    }
 
-.links {
-  margin-top: 15px;
-  text-align: center;
-  font-size: 13px;
-}
+    .options a:hover {
+      color: #3b82f6;
+    }
 
-.links a {
-  color: #3b82f6;
-  text-decoration: none;
-}
+    .options a:hover::after {
+      width: 100%;
+    }
 
-.links a:hover {
-  text-decoration: underline;
-}
-  
-</style>
+    /* Botão principal */
+    button {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.2px;
+      margin-top: 4px;
+    }
 
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+      transition: left 0.5s;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 12px 35px -10px rgba(59, 130, 246, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    /* Estado de loading */
+    button.loading {
+      background: linear-gradient(135deg, #1e293b, #334155);
+      cursor: wait;
+      opacity: 0.95;
+    }
+
+    button.loading:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    button.loading::before {
+      display: none;
+    }
+
+    /* Mensagem de erro */
+    #msg {
+      margin-top: 16px;
+      font-size: 14px;
+      text-align: center;
+      color: #f87171;
+      font-weight: 500;
+      min-height: 20px;
+      animation: shake 0.3s ease;
+      padding: 0 8px;
+    }
+
+    #msg:empty {
+      display: none;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-3px); }
+      75% { transform: translateX(3px); }
+    }
+
+    /* Links inferiores */
+    .links {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 14px;
+      color: #94a3b8;
+      padding-top: 20px;
+      border-top: 1px solid rgba(30, 41, 59, 0.5);
+    }
+
+    .links a {
+      color: #60a5fa;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: currentColor;
+      transition: width 0.2s;
+    }
+
+    .links a:hover {
+      color: #3b82f6;
+    }
+
+    .links a:hover::after {
+      width: 100%;
+    }
+
+    /* Responsivo */
+    @media (max-width: 480px) {
+      .wrapper {
+        gap: 30px;
+        padding: 16px;
+      }
+
+      .logo {
+        font-size: 32px;
+        letter-spacing: 2px;
+      }
+
+      .login-box {
+        padding: 32px 28px;
+        border-radius: 20px;
+      }
+
+      .login-box h2 {
+        font-size: 20px;
+        margin-bottom: 24px;
+      }
+
+      .input-group input {
+        padding: 13px 42px 13px 15px;
+        font-size: 14px;
+      }
+
+      button {
+        padding: 13px 18px;
+        font-size: 14px;
+      }
+    }
+
+    /* Acessibilidade */
+    input:focus-visible,
+    button:focus-visible,
+    a:focus-visible {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+
+    /* Utilitário para animação de entrada */
+    .login-box {
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(1.02); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
 </head>
-
-<canvas id="bg"></canvas> <!-- 🔥 ESSENCIAL -->
 
 <body>
 
 <canvas id="bg"></canvas>
 
 <div class="wrapper">
-
-  <h1 class="logo">CJSISTEMAS</h1>
+  <h1 class="logo">⚡ CJSISTEMAS</h1>
 
   <div class="login-box">
-
-    <h2>Login</h2>
+    <h2>Bem-vindo de volta</h2>
 
     <div class="input-group">
-      <input type="email" id="email" placeholder="Email">
+      <input type="email" id="email" placeholder="seu@email.com" autocomplete="email">
     </div>
 
     <div class="input-group">
-      <input type="password" id="senha" placeholder="Senha">
+      <input type="password" id="senha" placeholder="Sua senha" autocomplete="current-password">
       <span onclick="toggleSenha()">👁️</span>
     </div>
 
     <div class="options">
-      <label><input type="checkbox"> lembrar</label>
-      <a href="reset.html">esqueci senha</a>
+      <label><input type="checkbox"> Lembrar de mim</label>
+      <a href="reset.html">Esqueceu a senha?</a>
     </div>
 
-    <button id="btn" onclick="login()">Entrar</button>
+    <button id="btn" onclick="login()">🚀 Entrar</button>
 
     <p id="msg"></p>
 
     <div class="links">
-      <p>Não tem conta? <a href="register.html">Criar conta</a></p>
+      <p>Não tem conta? <a href="register.html">Criar conta gratuita</a></p>
     </div>
-
   </div>
-
 </div>
 
-</body>
-
+<!-- SEU SCRIPT ORIGINAL - ABSOLUTAMENTE INTACTO -->
 <script>
 async function login() {
   const email = document.getElementById("email").value;

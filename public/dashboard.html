@@ -3,246 +3,802 @@
 <head>
   <title>Dashboard</title>
   <link rel="stylesheet" href="style.css">
-
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: radial-gradient(circle at top, #0f172a, #020617);
-  overflow-x: hidden;
-}
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(ellipse at top, #1e293b 0%, #0f172a 40%, #020617 100%);
+      color: #e2e8f0;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
 
-.app {
-  display: flex;
-  height: 100vh;
-}
+    /* Canvas de fundo */
+    #bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
 
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
+    /* Efeito de brilho animado no fundo */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.1), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.08), transparent 45%);
+      z-index: 0;
+      animation: pulse 20s ease-in-out infinite;
+    }
 
-/* fundo */
-#bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-}
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
 
-/* topo */
-.topbar {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
+    /* Layout principal */
+    .app {
+      display: flex;
+      height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
 
-  background: rgba(2,6,23,0.8);
-  border-bottom: 1px solid #1e293b;
-}
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
 
-.logo {
-  font-size: 22px;
-  font-weight: bold;
-  background: linear-gradient(90deg, #3b82f6, #9333ea);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+    /* Topbar */
+    .topbar {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      background: linear-gradient(180deg, rgba(2,6,23,0.95), rgba(2,6,23,0.85));
+      border-bottom: 1px solid rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
 
-/* layout geral */
+    .logo {
+      font-size: 20px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6, #3b82f6);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 4s ease infinite;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-/* sidebar */
-.sidebar {
-  width: 240px;
-  min-width: 240px;
+    .logo::before {
+      content: '⚡';
+      font-size: 18px;
+    }
 
-  background: #020617;
-  border-right: 1px solid #1e293b;
-  padding: 20px;
-}
-.sidebar button {
-  width: 100%;
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  background: #1e293b;
-  color: white;
-  cursor: pointer;
-}
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
 
-.sidebar button:hover {
-  background: #3b82f6;
-}
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      min-width: 250px;
+      background: linear-gradient(180deg, rgba(2,6,23,0.98), rgba(15,23,42,0.95));
+      border-right: 1px solid rgba(30, 41, 59, 0.8);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
 
-/* conteúdo */
-.content {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-}
+    .sidebar h3 {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #64748b;
+      margin: 8px 12px 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(30, 41, 59, 0.6);
+    }
 
-/* 🔥 separado, fora */
-.content-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-}
+    .sidebar button {
+      width: 100%;
+      margin: 6px 0;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      background: rgba(30, 41, 59, 0.6);
+      color: #cbd5e1;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
 
-/* resumo */
-.resumo {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
-}
+    .sidebar button::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background: linear-gradient(180deg, #3b82f6, #8b5cf6);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
 
-.card-resumo {
-  flex: 1;
-  padding: 15px;
-  border-radius: 10px;
-  background: #020617;
-  border: 1px solid #1e293b;
-  text-align: center;
-}
+    .sidebar button:hover {
+      background: rgba(59, 130, 246, 0.2);
+      color: #f1f5f9;
+      border-color: rgba(59, 130, 246, 0.4);
+      transform: translateX(3px);
+    }
 
-/* grid */
-.chamados-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 15px;
-  width: 100%;
-}
+    .sidebar button:hover::before {
+      opacity: 1;
+    }
 
-/* cards */
-.card {
-  border: 1px solid #1e293b;
-  padding: 15px;
-  border-radius: 10px;
-  background: #020617;
-  cursor: pointer;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 60px;
+    .sidebar button:active {
+      transform: translateX(1px);
+    }
 
-}
+    /* Conteúdo principal */
+    .content {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
 
+    .content-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+    }
 
+    #tituloPagina {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-/* status */
-.status {
-  margin-top: 8px;
-  padding: 5px 10px;
-  border-radius: 6px;
-  display: inline-block;
-  font-size: 12px;
-  color: black;
-}
+    #tituloPagina::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(148,163,184,0.3), transparent);
+      margin-left: 16px;
+    }
 
-/* CHAT */
-#chatBox {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  width: 320px;
-  height: 450px;
-  background: #020617;
-  border-radius: 12px;
-  display: none;
-  flex-direction: column;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
-  border: 1px solid #1e293b;
-}
+    /* Filtros e Busca */
+    .filtros, .busca {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
 
-.chat-header {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  border-bottom: 1px solid #1e293b;
-  font-size: 14px;
-}
+    .filtros button, .busca input {
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: 1px solid rgba(30, 41, 59, 0.8);
+      background: rgba(2, 6, 23, 0.8);
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
 
-#mensagens {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-}
+    .filtros button:hover, .busca input:focus {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: #3b82f6;
+      color: #e2e8f0;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
 
-.chat-footer {
-  display: flex;
-  gap: 8px;
-  padding: 10px;
-  border-top: 1px solid #1e293b;
-}
+    .filtros button.active {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      border-color: transparent;
+      color: white;
+      font-weight: 600;
+    }
 
-.chat-footer input {
-  flex: 1;
-  padding: 8px;
-  border-radius: 6px;
-  border: none;
-  background: #1e293b;
-  color: white;
-}
+    .busca input {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px 16px;
+      font-size: 14px;
+    }
 
-.chat-footer button {
-  padding: 8px 10px;
-  font-size: 13px;
-  border-radius: 6px;
-  background: #3b82f6;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
+    .busca input::placeholder {
+      color: #64748b;
+    }
 
-.msg {
-  padding: 8px;
-  margin-bottom: 8px;
-  border-radius: 10px;
-  max-width: 75%;
-  font-size: 13px;
-}
+    /* Cards de resumo */
+    .resumo {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
 
-.msg-me {
-  background: #3b82f6;
-  color: white;
-  align-self: flex-end;
-}
+    .card-resumo {
+      padding: 20px;
+      border-radius: 16px;
+      background: linear-gradient(145deg, rgba(2,6,23,0.9), rgba(15,23,42,0.8));
+      border: 1px solid rgba(30, 41, 59, 0.7);
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
 
-.msg-other {
-  background: #1e293b;
-  color: #e2e8f0;
-  align-self: flex-start;
-}
+    .card-resumo::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #22c55e, #3b82f6, #8b5cf6);
+      opacity: 0.7;
+    }
 
+    .card-resumo:hover {
+      transform: translateY(-3px);
+      border-color: rgba(59, 130, 246, 0.5);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-resumo span {
+      font-size: 32px;
+      font-weight: 800;
+      display: block;
+      margin: 8px 0 4px;
+      background: linear-gradient(135deg, #e2e8f0, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .card-resumo:first-child span { color: #22c55e; -webkit-text-fill-color: #22c55e; }
+    .card-resumo:nth-child(2) span { color: #facc15; -webkit-text-fill-color: #facc15; }
+    .card-resumo:last-child span { color: #ef4444; -webkit-text-fill-color: #ef4444; }
+
+    /* Grid de cards */
+    .chamados-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+      width: 100%;
+    }
+
+    /* Cards de chamado/usuário */
+    .card {
+      border: 1px solid rgba(30, 41, 59, 0.8);
+      padding: 18px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(2,6,23,0.95), rgba(15,23,42,0.9));
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(59,130,246,0.5), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(59, 130, 246, 0.5);
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card strong {
+      font-size: 16px;
+      color: #f1f5f9;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .card small {
+      color: #94a3b8;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .card p {
+      color: #cbd5e1;
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* Status badges */
+    .status {
+      padding: 6px 12px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #020617;
+      width: fit-content;
+    }
+
+    /* Chat box */
+    #chatBox {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: 360px;
+      height: 480px;
+      max-height: 80vh;
+      background: linear-gradient(145deg, rgba(2,6,23,0.98), rgba(15,23,42,0.95));
+      border-radius: 18px;
+      display: none;
+      flex-direction: column;
+      box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(30, 41, 59, 0.8);
+      z-index: 100;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .chat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(30, 41, 59, 0.8);
+      font-size: 14px;
+      font-weight: 600;
+      color: #f1f5f9;
+      background: rgba(2, 6, 23, 0.5);
+      border-radius: 18px 18px 0 0;
+    }
+
+    .chat-header button {
+      background: rgba(239, 68, 68, 0.2);
+      border: none;
+      color: #f87171;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+
+    .chat-header button:hover {
+      background: rgba(239, 68, 68, 0.4);
+      transform: scale(1.05);
+    }
+
+    #mensagens {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+    }
+
+    #mensagens::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #mensagens::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #mensagens::-webkit-scrollbar-thumb {
+      background: rgba(59, 130, 246, 0.4);
+      border-radius: 3px;
+    }
+
+    .chat-footer {
+      display: flex;
+      gap: 10px;
+      padding: 14px 18px;
+      border-top: 1px solid rgba(30, 41, 59, 0.8);
+      background: rgba(2, 6, 23, 0.5);
+      border-radius: 0 0 18px 18px;
+    }
+
+    .chat-footer input {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(30, 41, 59, 0.8);
+      background: rgba(2, 6, 23, 0.8);
+      color: #e2e8f0;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .chat-footer input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .chat-footer input::placeholder {
+      color: #64748b;
+    }
+
+    .chat-footer button {
+      padding: 12px 20px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      border: none;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .chat-footer button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    }
+
+    .chat-footer button:active {
+      transform: translateY(0);
+    }
+
+    /* Mensagens do chat */
+    .msg {
+      padding: 12px 16px;
+      border-radius: 16px;
+      max-width: 85%;
+      font-size: 14px;
+      line-height: 1.4;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg small {
+      display: block;
+      font-size: 11px;
+      opacity: 0.8;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .msg-me {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-other {
+      background: rgba(30, 41, 59, 0.8);
+      color: #e2e8f0;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    /* Notificações */
+    #notificacao {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(145deg, rgba(2,6,23,0.98), rgba(15,23,42,0.95));
+      color: #e2e8f0;
+      padding: 16px 20px;
+      border-radius: 14px;
+      box-shadow: 
+        0 20px 40px rgba(0,0,0,0.4),
+        0 0 0 1px rgba(255,255,255,0.1);
+      display: none;
+      z-index: 999;
+      min-width: 280px;
+      border: 1px solid rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(12px);
+      animation: slideInRight 0.3s ease;
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    #notifNome {
+      font-weight: 700;
+      color: #f1f5f9;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    #notifTexto {
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    #notifBtn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      padding: 14px 20px;
+      border-radius: 50px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 
+        0 10px 30px rgba(59, 130, 246, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+      z-index: 9999;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #notifBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 15px 40px rgba(59, 130, 246, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.15);
+    }
+
+    #notifBtn:active {
+      transform: translateY(0);
+    }
+
+    #notifCount {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      border-radius: 50%;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      min-width: 24px;
+      text-align: center;
+      display: none;
+      animation: pulseBadge 2s infinite;
+    }
+
+    @keyframes pulseBadge {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+    }
+
+    #notifBox {
+      position: fixed;
+      bottom: 84px;
+      right: 24px;
+      width: 320px;
+      max-height: 340px;
+      overflow-y: auto;
+      background: linear-gradient(145deg, rgba(2,6,23,0.98), rgba(15,23,42,0.95));
+      border: 1px solid rgba(30, 41, 59, 0.8);
+      border-radius: 16px;
+      display: none;
+      z-index: 9999;
+      box-shadow: 
+        0 20px 40px rgba(0,0,0,0.4),
+        0 0 0 1px rgba(255,255,255,0.1);
+      backdrop-filter: blur(12px);
+    }
+
+    #notifBox::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #notifBox::-webkit-scrollbar-thumb {
+      background: rgba(59, 130, 246, 0.4);
+      border-radius: 3px;
+    }
+
+    /* Scrollbar personalizado */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(2, 6, 23, 0.5);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(59, 130, 246, 0.4);
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(59, 130, 246, 0.6);
+    }
+
+    /* Responsivo */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 220px;
+        min-width: 220px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .app {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+        min-width: auto;
+        border-right: none;
+        border-bottom: 1px solid rgba(30, 41, 59, 0.8);
+        padding: 12px 16px;
+      }
+      
+      .sidebar h3 {
+        display: none;
+      }
+      
+      .sidebar button {
+        margin: 4px 2px;
+        padding: 10px 14px;
+        font-size: 13px;
+        justify-content: center;
+      }
+      
+      .content {
+        padding: 16px;
+      }
+      
+      .resumo {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .chamados-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      #chatBox {
+        width: calc(100% - 48px);
+        right: 24px;
+        bottom: 80px;
+      }
+      
+      #notifBtn, #notifBox {
+        right: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .resumo {
+        grid-template-columns: 1fr;
+      }
+      
+      .filtros, .busca {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .busca input {
+        min-width: auto;
+      }
+    }
+
+    /* Acessibilidade */
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+
+    /* Utilitários */
+    .hidden { display: none !important; }
+    .visible { display: block !important; }
   </style>
 </head>
 
 <body>
 
-
-
-</div>
-
- <canvas id="bg"></canvas>
+<canvas id="bg"></canvas>
 
 <div class="app">
 
   <!-- SIDEBAR -->
   <div class="sidebar">
-    <h3>Painel</h3>
+    <h3>🔧 Painel</h3>
     
-    <button onclick="carregarChamados()"> Dashboard</button>
-    <button onclick="abrirNovoChamado()">+ Novo Chamado</button>
+    <button onclick="carregarChamados()">📊 Dashboard</button>
+    <button onclick="abrirNovoChamado()">➕ Novo Chamado</button>
     <button onclick="carregarChamadosFiltros()">📋 Chamados</button>
     <button onclick="carregarUsuarios()">👥 Usuários</button>
-    <button onclick="logout()">Sair</button>
+    <button onclick="window.location.href='relatorios.html'">📈 Relatórios</button>
+    <button onclick="logout()">🚪 Sair</button>
   </div>
 
   <!-- ÁREA DIREITA -->
@@ -259,22 +815,21 @@
 
         <h2 id="tituloPagina">Dashboard</h2>
 
+        <div id="filtrosChamados" class="filtros">
+          <button onclick="filtrarChamados('todos')">Todos</button>
+          <button onclick="filtrarChamados('aberto')">🟢 Abertos</button>
+          <button onclick="filtrarChamados('andamento')">🟡 Andamento</button>
+          <button onclick="filtrarChamados('fechado')">🔴 Fechados</button>
+        </div>
 
-<div id="filtrosChamados" class="filtros">
-  <button onclick="filtrarChamados('todos')">Todos</button>
-  <button onclick="filtrarChamados('aberto')">🟢 Abertos</button>
-  <button onclick="filtrarChamados('andamento')">🟡 Andamento</button>
-  <button onclick="filtrarChamados('fechado')">🔴 Fechados</button>
-</div>
-
-<div id="buscaContainer" class="busca">
-  <input 
-    type="text" 
-    id="inputBusca" 
-    placeholder="🔍 Buscar chamado..."
-    oninput="filtrarChamados()"
-  >
-</div>
+        <div id="buscaContainer" class="busca">
+          <input 
+            type="text" 
+            id="inputBusca" 
+            placeholder="🔍 Buscar por título, descrição ou número..."
+            oninput="filtrarChamados()"
+          >
+        </div>
 
         <div class="resumo">
           <div class="card-resumo">🟢 <span id="abertos">0</span><br>Abertos</div>
@@ -283,14 +838,15 @@
         </div>
         
         <div id="listaChamados" class="chamados-grid"></div>
-<div id="buscaUsuarios" class="busca">
-  <input 
-    type="text" 
-    id="inputBuscaUsuario" 
-    placeholder="🔍 Buscar usuário..."
-    oninput="filtrarUsuarios()"
-  >
-</div>
+        
+        <div id="buscaUsuarios" class="busca">
+          <input 
+            type="text" 
+            id="inputBuscaUsuario" 
+            placeholder="🔍 Buscar usuário por nome ou email..."
+            oninput="filtrarUsuarios()"
+          >
+        </div>
 
         <div id="listaUsuarios" class="chamados-grid"></div>
          
@@ -303,83 +859,33 @@
 
 <!-- Chat pequeno na lateral -->
 <div id="chatBox">
-
   <div class="chat-header">
     <span id="chatTitulo"></span>
-    <button onclick="fecharChat()">✖</button>
+    <button onclick="fecharChat()">✕</button>
   </div>
-
   <div id="mensagens"></div>
-
   <div class="chat-footer">
-    <input type="text" id="msg" placeholder="Digite...">
+    <input type="text" id="msg" placeholder="Digite sua mensagem...">
     <button onclick="enviar()">Enviar</button>
   </div>
-
 </div>
 
-<div id="notificacao" style="
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #1e293b;
-  color: white;
-  padding: 14px 18px;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-  display: none;
-  z-index: 999;
-  min-width: 250px;
-  transform: translateY(-20px);
-  opacity: 0;
-  transition: all 0.3s ease;
-">
+<!-- Notificação flutuante -->
+<div id="notificacao">
   <strong id="notifNome">Usuário</strong>
-  <div id="notifTexto" style="font-size:13px; margin-top:4px;"></div>
+  <div id="notifTexto"></div>
 </div>
 
-<div id="notifBtn" style="
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #2563eb;
-  color: white;
-  padding: 12px 16px;
-  border-radius: 50px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.4);
-  z-index: 9999;
-">
-  💬 Notificações
-  <span id="notifCount" style="
-    background: red;
-    border-radius: 50%;
-    padding: 4px 8px;
-    font-size: 12px;
-    display: none;
-  ">0</span>
+<!-- Botão de notificações -->
+<div id="notifBtn">
+  🔔 Notificações
+  <span id="notifCount">0</span>
 </div>
 
-<div id="notifBox" style="
-  position: fixed;
-  bottom: 70px;
-  right: 20px;
-  width: 300px;
-  max-height: 300px;
-  overflow-y: auto;
-  background: #020617;
-  border: 1px solid #1e293b;
-  border-radius: 10px;
-  display: none;
-  z-index: 9999;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-"></div>
+<!-- Caixa de notificações -->
+<div id="notifBox"></div>
 
-</div>
-
+<!-- SEU SCRIPT ORIGINAL - ABSOLUTAMENTE INTACTO -->
 <script>
 let totalAnterior = 0;  
 let listaNotificacoes = [];
