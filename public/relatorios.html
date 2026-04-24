@@ -820,6 +820,24 @@ window.addEventListener("resize", () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 });
+
+async function protegerPagina() {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch("/perfil", {
+    headers: { Authorization: "Bearer " + token }
+  });
+
+  const user = await res.json();
+
+  if (user.role === "usuario") {
+    alert("Acesso restrito");
+    window.location.href = "dashboard.html";
+  }
+}
+
+protegerPagina();
+
 </script>
 
 </body>
