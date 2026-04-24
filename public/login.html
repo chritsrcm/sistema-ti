@@ -1,12 +1,28 @@
+<!-- ============================================================================
+  DOCUMENTO HTML: PÁGINA DE LOGIN DO SISTEMA
+  Interface de autenticação com validação, animações e integração com API
+============================================================================ -->
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- Metadados e título da página -->
   <title>Login</title>
+  
+  <!-- Font Awesome para ícones (opcional, usado para toggle de senha) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <!-- Link para folha de estilos externa (estilos globais do sistema) -->
   <link rel="stylesheet" href="style.css">
+  
+  <!-- ========================================================================
+    ESTILOS INTERNOS: CSS específico da página de login
+    Inclui reset, layout, animações, componentes e responsividade
+  ======================================================================== -->
   <style>
+    /* Reset básico de margens e box-sizing para consistência entre navegadores */
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* Configuração do corpo: centralização, fundo com gradiente e overflow controlado */
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       height: 100vh;
@@ -19,7 +35,7 @@
       position: relative;
     }
 
-    /* Canvas de fundo */
+    /* Canvas de fundo: elemento para animação de partículas, sem interatividade */
     #bg {
       position: fixed;
       top: 0;
@@ -30,7 +46,7 @@
       pointer-events: none;
     }
 
-    /* Efeitos de brilho no fundo */
+    /* Efeitos de brilho flutuante no fundo com animação suave */
     body::before,
     body::after {
       content: '';
@@ -66,7 +82,7 @@
       66% { transform: translate(-20px, 30px) scale(0.95); }
     }
 
-    /* Wrapper central */
+    /* Wrapper central: container para logo e formulário com animação de entrada */
     .wrapper {
       display: flex;
       flex-direction: column;
@@ -81,17 +97,11 @@
     }
 
     @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Logo */
+    /* Logo com gradiente animado e efeito de texto recortado */
     .logo {
       font-size: 38px;
       font-weight: 800;
@@ -123,7 +133,7 @@
       50% { background-position: 100% 50%; }
     }
 
-    /* Caixa de login */
+    /* Caixa de login: estilo glassmorphism com bordas, sombra e detalhe superior */
     .login-box {
       position: relative;
       z-index: 2;
@@ -144,14 +154,8 @@
     }
 
     @keyframes cardEnter {
-      from {
-        opacity: 0;
-        transform: scale(0.98) translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
+      from { opacity: 0; transform: scale(0.98) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
     }
 
     .login-box::before {
@@ -188,7 +192,7 @@
       border-radius: 2px;
     }
 
-    /* Inputs */
+    /* Grupos de input: estrutura para campos com ícones e estados de foco */
     .input-group {
       position: relative;
       margin-bottom: 20px;
@@ -220,7 +224,7 @@
       transform: translateY(-1px);
     }
 
-    /* Ícone do olho */
+    /* Ícone de toggle para visibilidade da senha */
     .input-group span {
       position: absolute;
       right: 14px;
@@ -243,7 +247,7 @@
       background: rgba(59, 130, 246, 0.1);
     }
 
-    /* Options row */
+    /* Linha de opções: checkbox "Lembrar de mim" e link de recuperação */
     .options {
       display: flex;
       justify-content: space-between;
@@ -302,7 +306,7 @@
       width: 100%;
     }
 
-    /* Botão principal */
+    /* Botão principal: gradiente, efeito de brilho ao hover e estado de loading */
     button {
       width: 100%;
       padding: 14px 20px;
@@ -346,7 +350,7 @@
       transform: translateY(0);
     }
 
-    /* Estado de loading */
+    /* Estado de loading: desabilita interatividade visual durante requisição */
     button.loading {
       background: linear-gradient(135deg, #1e293b, #334155);
       cursor: wait;
@@ -362,7 +366,7 @@
       display: none;
     }
 
-    /* Mensagem de erro */
+    /* Mensagem de erro: exibição com animação de shake para chamar atenção */
     #msg {
       margin-top: 16px;
       font-size: 14px;
@@ -384,7 +388,7 @@
       75% { transform: translateX(3px); }
     }
 
-    /* Links inferiores */
+    /* Links inferiores: área para criação de nova conta */
     .links {
       margin-top: 24px;
       text-align: center;
@@ -421,40 +425,17 @@
       width: 100%;
     }
 
-    /* Responsivo */
+    /* Media query para responsividade em mobile */
     @media (max-width: 480px) {
-      .wrapper {
-        gap: 30px;
-        padding: 16px;
-      }
-
-      .logo {
-        font-size: 32px;
-        letter-spacing: 2px;
-      }
-
-      .login-box {
-        padding: 32px 28px;
-        border-radius: 20px;
-      }
-
-      .login-box h2 {
-        font-size: 20px;
-        margin-bottom: 24px;
-      }
-
-      .input-group input {
-        padding: 13px 42px 13px 15px;
-        font-size: 14px;
-      }
-
-      button {
-        padding: 13px 18px;
-        font-size: 14px;
-      }
+      .wrapper { gap: 30px; padding: 16px; }
+      .logo { font-size: 32px; letter-spacing: 2px; }
+      .login-box { padding: 32px 28px; border-radius: 20px; }
+      .login-box h2 { font-size: 20px; margin-bottom: 24px; }
+      .input-group input { padding: 13px 42px 13px 15px; font-size: 14px; }
+      button { padding: 13px 18px; font-size: 14px; }
     }
 
-    /* Acessibilidade */
+    /* Acessibilidade: foco visível para navegação via teclado */
     input:focus-visible,
     button:focus-visible,
     a:focus-visible {
@@ -462,10 +443,8 @@
       outline-offset: 2px;
     }
 
-    /* Utilitário para animação de entrada */
-    .login-box {
-      animation: fadeIn 0.5s ease;
-    }
+    /* Animação utilitária de entrada para o container de login */
+    .login-box { animation: fadeIn 0.5s ease; }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: scale(1.02); }
@@ -474,54 +453,72 @@
   </style>
 </head>
 
+<!-- ============================================================================
+  CORPO DA PÁGINA: ESTRUTURA VISUAL DO FORMULÁRIO DE LOGIN
+============================================================================ -->
 <body>
 
+<!-- Canvas para animação de fundo (partículas) -->
 <canvas id="bg"></canvas>
 
+<!-- Wrapper central: organiza logo e formulário verticalmente -->
 <div class="wrapper">
   <h1 class="logo">⚡ CJSISTEMAS</h1>
 
+  <!-- Caixa de login: container do formulário com campos e ações -->
   <div class="login-box">
     <h2>Bem-vindo de volta</h2>
 
+    <!-- Campo de email com autocomplete para preenchimento automático -->
     <div class="input-group">
       <input type="email" id="email" placeholder="seu@email.com" autocomplete="email">
     </div>
 
+    <!-- Campo de senha com toggle de visibilidade e autocomplete -->
     <div class="input-group">
       <input type="password" id="senha" placeholder="Sua senha" autocomplete="current-password">
       <span onclick="toggleSenha()">👁️</span>
     </div>
 
+    <!-- Opções: checkbox "Lembrar de mim" e link de recuperação de senha -->
     <div class="options">
       <label><input type="checkbox"> Lembrar de mim</label>
       <a href="reset.html">Esqueceu a senha?</a>
     </div>
 
+    <!-- Botão de login: aciona função login() -->
     <button id="btn" onclick="login()">🚀 Entrar</button>
 
+    <!-- Área para exibição de mensagens de erro ou feedback -->
     <p id="msg"></p>
 
+    <!-- Link para página de registro de nova conta -->
     <div class="links">
       <p>Não tem conta? <a href="register.html">Criar conta gratuita</a></p>
     </div>
   </div>
 </div>
 
-<!-- SEU SCRIPT ORIGINAL - ABSOLUTAMENTE INTACTO -->
+<!-- ============================================================================
+  JAVASCRIPT: LÓGICA DE AUTENTICAÇÃO E ANIMAÇÃO DE FUNDO
+============================================================================ -->
 <script>
+// Função principal: valida campos, envia credenciais para API e gerencia redirecionamento
 async function login() {
+  // Captura valores dos campos de email e senha
   const email = document.getElementById("email").value;
   const senha = document.getElementById("senha").value;
   const msg = document.getElementById("msg");
   const btn = document.getElementById("btn");
 
+  // Limpa mensagem anterior antes de nova tentativa
   msg.innerText = "";
 
-  // 🔥 loading
+  // Atualiza estado visual do botão para indicar processamento
   btn.innerText = "Entrando...";
   btn.classList.add("loading");
 
+  // Requisição POST para endpoint de login com corpo JSON e headers apropriados
   const res = await fetch("/login", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
@@ -530,6 +527,7 @@ async function login() {
 
   const data = await res.json();
 
+  // Tratamento de erro: exibe mensagem da API e restaura estado do botão
   if (res.status !== 200) {
     msg.innerText = data.error;
     btn.innerText = "Entrar";
@@ -537,30 +535,39 @@ async function login() {
     return;
   }
 
+  // Sucesso: armazena token JWT no localStorage para autenticação nas próximas requisições
   localStorage.setItem("token", data.token);
 
-  // animação antes de entrar
+  // Animação de transição: reduz opacidade do corpo antes do redirecionamento
   document.body.style.opacity = "0";
 
+  // Redireciona para dashboard após breve delay para suavizar a transição visual
   setTimeout(() => {
     window.location.href = "dashboard.html";
   }, 400);
 }
 
+// Função para alternar visibilidade do campo de senha (texto/password)
 function toggleSenha() {
   const input = document.getElementById("senha");
   input.type = input.type === "password" ? "text" : "password";
 }
 
+// ============================================================================
+// ANIMAÇÃO DE FUNDO: CANVAS COM PARTÍCULAS FLUTUANTES
+// ============================================================================
 
 const canvas = document.getElementById("bg");
 const ctx = canvas.getContext("2d");
 
+// Define dimensões do canvas conforme tamanho da janela
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// Array para armazenar objetos que representam as partículas
 let particles = [];
 
+// Inicializa 80 partículas com posição, tamanho e velocidade aleatórios
 for (let i = 0; i < 80; i++) {
   particles.push({
     x: Math.random() * canvas.width,
@@ -571,6 +578,7 @@ for (let i = 0; i < 80; i++) {
   });
 }
 
+// Loop de animação: limpa canvas, atualiza posição das partículas e redesenha
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -578,6 +586,7 @@ function animate() {
     p.x += p.speedX;
     p.y += p.speedY;
 
+    // Inverte direção ao atingir bordas do canvas para efeito de quique suave
     if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
     if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
 
@@ -590,8 +599,8 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
+// Inicia o loop de animação
 animate();
-
 </script>
 
 </body>

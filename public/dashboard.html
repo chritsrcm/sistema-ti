@@ -1,11 +1,25 @@
+<!-- ============================================================================
+  DOCUMENTO HTML: PÁGINA DE DASHBOARD DO SISTEMA DE CHAMADOS
+  Interface principal com sidebar, listagem de chamados, chat e notificações
+============================================================================ -->
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- Metadados e título da página -->
   <title>Dashboard</title>
+  
+  <!-- Link para folha de estilos externa (estilos globais do sistema) -->
   <link rel="stylesheet" href="style.css">
+  
+  <!-- ========================================================================
+    ESTILOS INTERNOS: CSS específico do dashboard
+    Inclui reset, layout, componentes, animações e responsividade
+  ======================================================================== -->
   <style>
+    /* Reset básico de margens e box-sizing para consistência entre navegadores */
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* Configuração do corpo: fonte, cores e fundo com gradiente */
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background: radial-gradient(ellipse at top, #1e293b 0%, #0f172a 40%, #020617 100%);
@@ -14,7 +28,7 @@
       min-height: 100vh;
     }
 
-    /* Canvas de fundo */
+    /* Canvas de fundo: elemento para animação de partículas, sem interatividade */
     #bg {
       position: fixed;
       top: 0;
@@ -25,7 +39,7 @@
       pointer-events: none;
     }
 
-    /* Efeito de brilho animado no fundo */
+    /* Efeito de brilho animado no fundo com keyframes de pulso e escala */
     body::before {
       content: '';
       position: fixed;
@@ -45,7 +59,7 @@
       50% { opacity: 1; transform: scale(1.05); }
     }
 
-    /* Layout principal */
+    /* Layout principal: estrutura flex para sidebar e área de conteúdo */
     .app {
       display: flex;
       height: 100vh;
@@ -59,7 +73,7 @@
       flex-direction: column;
     }
 
-    /* Topbar */
+    /* Topbar: barra superior fixa com logo e efeito glassmorphism */
     .topbar {
       height: 64px;
       display: flex;
@@ -75,6 +89,7 @@
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
 
+    /* Logo com gradiente animado e ícone decorativo */
     .logo {
       font-size: 20px;
       font-weight: 800;
@@ -99,7 +114,7 @@
       50% { background-position: 100% 50%; }
     }
 
-    /* Sidebar */
+    /* Sidebar: menu lateral com navegação e estilo glassmorphism */
     .sidebar {
       width: 250px;
       min-width: 250px;
@@ -123,6 +138,7 @@
       border-bottom: 1px solid rgba(30, 41, 59, 0.6);
     }
 
+    /* Botões da sidebar: estilo base, hover e estado ativo */
     .sidebar button {
       width: 100%;
       margin: 6px 0;
@@ -170,7 +186,7 @@
       transform: translateX(1px);
     }
 
-    /* Conteúdo principal */
+    /* Área de conteúdo principal com scroll e largura máxima */
     .content {
       flex: 1;
       padding: 24px;
@@ -184,6 +200,7 @@
       width: 100%;
     }
 
+    /* Título da página com divisor decorativo */
     #tituloPagina {
       font-size: 22px;
       font-weight: 700;
@@ -202,7 +219,7 @@
       margin-left: 16px;
     }
 
-    /* Filtros e Busca */
+    /* Controles de filtro e busca: layout flex e estados de interação */
     .filtros, .busca {
       display: flex;
       gap: 10px;
@@ -249,7 +266,7 @@
       color: #64748b;
     }
 
-    /* Cards de resumo */
+    /* Cards de resumo: grid responsivo com indicadores de status */
     .resumo {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -295,11 +312,12 @@
       -webkit-text-fill-color: transparent;
     }
 
+    /* Cores específicas para cada card de resumo */
     .card-resumo:first-child span { color: #22c55e; -webkit-text-fill-color: #22c55e; }
     .card-resumo:nth-child(2) span { color: #facc15; -webkit-text-fill-color: #facc15; }
     .card-resumo:last-child span { color: #ef4444; -webkit-text-fill-color: #ef4444; }
 
-    /* Grid de cards */
+    /* Grid de cards de chamados: layout responsivo com auto-fit */
     .chamados-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -307,7 +325,7 @@
       width: 100%;
     }
 
-    /* Cards de chamado/usuário */
+    /* Cards individuais: estilo base, hover e estrutura interna */
     .card {
       border: 1px solid rgba(30, 41, 59, 0.8);
       padding: 18px;
@@ -367,7 +385,7 @@
       margin: 0;
     }
 
-    /* Status badges */
+    /* Badges de status: estilo visual para diferentes estados */
     .status {
       padding: 6px 12px;
       border-radius: 20px;
@@ -382,7 +400,7 @@
       width: fit-content;
     }
 
-    /* Chat box */
+    /* Chat flutuante: posicionamento fixo, animação de entrada e estilo glass */
     #chatBox {
       position: fixed;
       right: 24px;
@@ -448,6 +466,7 @@
       transform: scale(1.05);
     }
 
+    /* Área de mensagens do chat com scrollbar personalizado */
     #mensagens {
       flex: 1;
       overflow-y: auto;
@@ -523,7 +542,7 @@
       transform: translateY(0);
     }
 
-    /* Mensagens do chat */
+    /* Estilos das mensagens: diferenciação visual entre mensagens próprias e de outros */
     .msg {
       padding: 12px 16px;
       border-radius: 16px;
@@ -560,7 +579,7 @@
       border-bottom-left-radius: 4px;
     }
 
-    /* Notificações */
+    /* Notificações flutuantes: animação de entrada e estilo visual */
     #notificacao {
       position: fixed;
       top: 20px;
@@ -604,6 +623,7 @@
       line-height: 1.4;
     }
 
+    /* Botão flutuante de notificações com badge animado */
     #notifBtn {
       position: fixed;
       bottom: 24px;
@@ -653,6 +673,7 @@
       50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
     }
 
+    /* Caixa de notificações com scroll e estilo glass */
     #notifBox {
       position: fixed;
       bottom: 84px;
@@ -680,7 +701,7 @@
       border-radius: 3px;
     }
 
-    /* Scrollbar personalizado */
+    /* Scrollbar personalizado global para consistência visual */
     ::-webkit-scrollbar {
       width: 8px;
       height: 8px;
@@ -700,7 +721,7 @@
       background: rgba(59, 130, 246, 0.6);
     }
 
-    /* Responsivo */
+    /* Media queries para responsividade em tablets e mobile */
     @media (max-width: 1024px) {
       .sidebar {
         width: 220px;
@@ -770,26 +791,31 @@
       }
     }
 
-    /* Acessibilidade */
+    /* Acessibilidade: foco visível para navegação via teclado */
     button:focus-visible,
     input:focus-visible {
       outline: 2px solid #3b82f6;
       outline-offset: 2px;
     }
 
-    /* Utilitários */
+    /* Classes utilitárias para controle de exibição via JavaScript */
     .hidden { display: none !important; }
     .visible { display: block !important; }
   </style>
 </head>
 
+<!-- ============================================================================
+  CORPO DA PÁGINA: ESTRUTURA VISUAL DO DASHBOARD
+============================================================================ -->
 <body>
 
+<!-- Canvas para animação de fundo (partículas) -->
 <canvas id="bg"></canvas>
 
+<!-- Container principal da aplicação com layout flex -->
 <div class="app">
 
-  <!-- SIDEBAR -->
+  <!-- SIDEBAR: Menu de navegação lateral -->
   <div class="sidebar">
     <h3>🔧 Painel</h3>
     
@@ -798,25 +824,27 @@
     <button onclick="carregarChamadosFiltros()">📋 Chamados</button>
     <button onclick="carregarUsuarios()">👥 Usuários</button>
     <button id="btnRelatorios" onclick="window.location.href='relatorios.html'">
-  📈 Relatórios
-</button>
+      📈 Relatórios
+    </button>
     <button onclick="logout()">🚪 Sair</button>
   </div>
 
-  <!-- ÁREA DIREITA -->
+  <!-- ÁREA PRINCIPAL: Topbar + Conteúdo dinâmico -->
   <div class="main">
 
-    <!-- TOPBAR -->
+    <!-- TOPBAR: Cabeçalho fixo com logo da aplicação -->
     <div class="topbar">
       <h1 class="logo">CJSISTEMAS</h1>
     </div>
 
-    <!-- CONTEÚDO -->
+    <!-- CONTEÚDO DINÂMICO: Área que muda conforme navegação -->
     <div class="content">
       <div class="content-inner">
 
+        <!-- Título da seção atual (Dashboard, Chamados, Usuários) -->
         <h2 id="tituloPagina">Dashboard</h2>
 
+        <!-- Filtros por status de chamado -->
         <div id="filtrosChamados" class="filtros">
           <button onclick="filtrarChamados('todos')">Todos</button>
           <button onclick="filtrarChamados('aberto')">🟢 Abertos</button>
@@ -824,6 +852,7 @@
           <button onclick="filtrarChamados('fechado')">🔴 Fechados</button>
         </div>
 
+        <!-- Campo de busca por texto livre -->
         <div id="buscaContainer" class="busca">
           <input 
             type="text" 
@@ -833,14 +862,17 @@
           >
         </div>
 
+        <!-- Cards de resumo com contadores de status -->
         <div class="resumo">
           <div class="card-resumo">🟢 <span id="abertos">0</span><br>Abertos</div>
           <div class="card-resumo">🟡 <span id="andamento">0</span><br>Andamento</div>
           <div class="card-resumo">🔴 <span id="fechados">0</span><br>Fechados</div>
         </div>
         
+        <!-- Grid onde os cards de chamados serão renderizados -->
         <div id="listaChamados" class="chamados-grid"></div>
         
+        <!-- Campo de busca específico para listagem de usuários -->
         <div id="buscaUsuarios" class="busca">
           <input 
             type="text" 
@@ -850,6 +882,7 @@
           >
         </div>
 
+        <!-- Grid onde os cards de usuários serão renderizados -->
         <div id="listaUsuarios" class="chamados-grid"></div>
          
       </div>
@@ -859,7 +892,7 @@
 
 </div>
 
-<!-- Chat pequeno na lateral -->
+<!-- Chat flutuante: componente modal para mensagens em tempo real -->
 <div id="chatBox">
   <div class="chat-header">
     <span id="chatTitulo"></span>
@@ -872,23 +905,26 @@
   </div>
 </div>
 
-<!-- Notificação flutuante -->
+<!-- Notificação flutuante temporária (toast) -->
 <div id="notificacao">
   <strong id="notifNome">Usuário</strong>
   <div id="notifTexto"></div>
 </div>
 
-<!-- Botão de notificações -->
+<!-- Botão fixo para abrir caixa de notificações -->
 <div id="notifBtn">
   🔔 Notificações
   <span id="notifCount">0</span>
 </div>
 
-<!-- Caixa de notificações -->
+<!-- Caixa expansível com histórico de notificações -->
 <div id="notifBox"></div>
 
-<!-- SEU SCRIPT ORIGINAL - ABSOLUTAMENTE INTACTO -->
+<!-- ============================================================================
+  JAVASCRIPT: LÓGICA DE AUTENTICAÇÃO, DADOS, UI E NOTIFICAÇÕES
+============================================================================ -->
 <script>
+// Variáveis de estado global para controle de sessões e dados
 let totalAnterior = 0;  
 let listaNotificacoes = [];
 let meuRole = "";
@@ -897,7 +933,11 @@ let notificacoesNaoLidas = 0;
 let chamadosGlobal = [];
 let usuariosGlobal = [];
 
-// PERFIL DO USUARIO
+// ============================================================================
+// FUNÇÕES DE AUTENTICAÇÃO E PERFIL
+// ============================================================================
+
+// Carrega dados do usuário autenticado e ajusta UI conforme permissões
 async function carregarPerfil() {
   const token = localStorage.getItem("token");
 
@@ -908,17 +948,21 @@ async function carregarPerfil() {
   const user = await res.json();
   meuRole = user.role;
 
+  // Usuários comuns não acessam módulos administrativos
   if (meuRole === "usuario") {
-    // Esconde botão de Usuários
     const btnUsuarios = document.querySelector("button[onclick='carregarUsuarios()']");
     if (btnUsuarios) btnUsuarios.style.display = "none";
     
-    // Esconde botão de Relatórios
     const btnRelatorios = document.getElementById("btnRelatorios");
     if (btnRelatorios) btnRelatorios.style.display = "none";
   }
 }
 
+// ============================================================================
+// FUNÇÕES DE GERENCIAMENTO DE USUÁRIOS
+// ============================================================================
+
+// Busca lista de usuários e renderiza cards com opção de promoção (apenas admin)
 async function carregarUsuarios() {
   mostrarFiltros(false);
   mostrarBusca(false);
@@ -939,17 +983,15 @@ async function carregarUsuarios() {
   const div = document.getElementById("listaUsuarios");
   const chamadosDiv = document.getElementById("listaChamados");
 
-  // 🔥 CONTROLE DE TELA
+  // Controle de exibição: mostra usuários, esconde chamados e resumo
   div.style.display = "grid";
   chamadosDiv.style.display = "none";
-
-  // 🔥 ESCONDE RESUMO
   document.querySelector(".resumo").style.display = "none";
 
   div.innerHTML = "";
-
   document.getElementById("tituloPagina").innerText = "Usuários";
 
+  // Renderiza cada usuário como card interativo
   usuarios.forEach(u => {
     const item = document.createElement("div");
     item.classList.add("card");
@@ -970,11 +1012,12 @@ async function carregarUsuarios() {
 
     div.appendChild(item);
   });
-usuariosGlobal = usuarios;
-mostrarUsuarios(usuarios);
   
+  usuariosGlobal = usuarios;
+  mostrarUsuarios(usuarios);
 }
-//  PROMOVER USUÁRIO de função
+
+// Promove usuário para perfil técnico via API
 async function promover(id) {
   const token = localStorage.getItem("token");
 
@@ -984,16 +1027,17 @@ async function promover(id) {
   });
 
   const data = await res.json();
-
   alert(data.message || data.error);
-
-  carregarUsuarios(); // recarrega lista
+  carregarUsuarios(); // Recarrega lista para refletir alteração
 }
 
+// ============================================================================
+// FUNÇÕES DE GERENCIAMENTO DE CHAMADOS
+// ============================================================================
 
+// Carrega chamados com filtros e busca, renderizando cards com status e prioridade
 async function carregarChamadosFiltros() {
- 
- mostrarBusca(true);
+  mostrarBusca(true);
   const token = localStorage.getItem("token");
 
   const res = await fetch("/chamados", {
@@ -1001,10 +1045,9 @@ async function carregarChamadosFiltros() {
   });
 
   const chamados = await res.json();
-
   chamadosGlobal = chamados;
 
-  // 🔥 CONTROLE DE TELA
+  // Controle de exibição: mostra chamados, esconde usuários
   document.getElementById("buscaUsuarios").style.display = "none";
   document.getElementById("buscaContainer").style.display = "block";
   document.getElementById("listaUsuarios").style.display = "none";
@@ -1012,30 +1055,13 @@ async function carregarChamadosFiltros() {
   document.querySelector(".resumo").style.display = "flex";
 
   document.getElementById("tituloPagina").innerText = "Chamados";
-  document.getElementById("tituloPagina").innerText = "Chamados";
-
-// mostra filtros
-document.getElementById("filtrosChamados").style.display = "flex";
-
-// esconde usuários
-document.getElementById("listaUsuarios").style.display = "none";
-
-// mostra chamados
-document.getElementById("listaChamados").style.display = "grid";
-
-const filtros = document.getElementById("filtrosChamados");
-filtros.style.display = "flex";
-
-setTimeout(() => {
-  filtros.classList.add("show");
-}, 10);
+  document.getElementById("filtrosChamados").style.display = "flex";
 
   mostrarTodosChamados(chamados);
 }
 
+// Renderiza lista completa de chamados com lógica de prioridade e contadores
 function mostrarTodosChamados(chamados) {
-
-
   document.getElementById("buscaUsuarios").style.display = "none";
   const div = document.getElementById("listaChamados");
   div.innerHTML = "";
@@ -1045,10 +1071,10 @@ function mostrarTodosChamados(chamados) {
   let fechados = 0;
 
   chamados.forEach(c => {
-    
     const nomeTecnico = c.tecnico && c.tecnico.nome 
-  ? c.tecnico.nome 
-  : "Não atribuído";
+      ? c.tecnico.nome 
+      : "Não atribuído";
+    
     const agora = new Date();
     const criado = new Date(c.criadoEm || c.createdAt);
     const limite = new Date(criado);
@@ -1057,120 +1083,65 @@ function mostrarTodosChamados(chamados) {
     const dataTexto = criado.toLocaleString();
     const diasRestantes = Math.ceil((limite - agora) / (1000 * 60 * 60 * 24));
 
-// 🔥 PRIORIDADE
-let prioridadeCor = "#22c55e";
-let prioridadeTexto = "NORMAL";
+    // Lógica de prioridade baseada em tempo restante e status
+    let prioridadeCor = "#22c55e";
+    let prioridadeTexto = "NORMAL";
 
-// 🔥 SE FECHADO → SEMPRE NORMAL
-if (c.status !== "fechado") {
-  if (diasRestantes < 1) {
-    prioridadeCor = "#ef4444";
-    prioridadeTexto = "URGENTE";
-  } else if (diasRestantes <= 2) {
-    prioridadeCor = "#facc15";
-    prioridadeTexto = "ATENÇÃO";
-  }
-}
+    if (c.status !== "fechado") {
+      if (diasRestantes < 1) {
+        prioridadeCor = "#ef4444";
+        prioridadeTexto = "URGENTE";
+      } else if (diasRestantes <= 2) {
+        prioridadeCor = "#facc15";
+        prioridadeTexto = "ATENÇÃO";
+      }
+    }
 
-// 🔥 TEMPO DE RESOLUÇÃO
-let tempoResolucao = "";
+    // Exibe tempo de resolução se chamado estiver fechado
+    let tempoResolucao = "";
+    if (c.status === "fechado") {
+      const fechado = new Date(c.fechadoEm || c.updatedAt);
+      const diff = Math.ceil((fechado - criado) / (1000 * 60 * 60 * 24));
+      tempoResolucao = `<p style="color:#38bdf8;">⏱ Resolvido em ${diff} dias</p>`;
+    }
 
-if (c.status === "fechado") {
-  const fechado = new Date(c.fechadoEm || c.updatedAt);
-  const diff = Math.ceil((fechado - criado) / (1000 * 60 * 60 * 24));
-
-  tempoResolucao = `
-    <p style="color:#38bdf8;">
-      ⏱ Resolvido em ${diff} dias
-    </p>
-  `;
-}
-
-    // 🔥 CONTADORES
+    // Atualiza contadores do resumo
     if (c.status === "aberto") abertos++;
     if (c.status === "andamento") andamento++;
     if (c.status === "fechado") fechados++;
 
-    const statusTexto =
-      c.status === "aberto" ? "Aberto" :
-      c.status === "andamento" ? "Em andamento" :
-      "Fechado";
+    const statusTexto = c.status === "aberto" ? "Aberto" :
+                        c.status === "andamento" ? "Em andamento" : "Fechado";
 
-    const corStatus =
-      c.status === "aberto" ? "#22c55e" :
-      c.status === "andamento" ? "#facc15" :
-      "#ef4444";
+    const corStatus = c.status === "aberto" ? "#22c55e" :
+                      c.status === "andamento" ? "#facc15" : "#ef4444";
 
     const item = document.createElement("div");
     item.classList.add("card");
 
+    // Template HTML do card com status, prioridade e botão de ação condicional
     item.innerHTML = `
-  <strong>${c.titulo}</strong><br>
-  ${c.descricao}<br>
-  <small>Categoria: ${c.categoria}</small><br>
+      <strong>${c.titulo}</strong><br>
+      ${c.descricao}<br>
+      <small>Categoria: ${c.categoria}</small><br>
 
-  <!-- 🔥 STATUS + PRIORIDADE -->
-  <div style="
-    display:flex;
-    align-items:center;
-    gap:8px;
-    margin-top:10px;
-    margin-bottom:10px;
-  ">
-    <div style="
-      background:${corStatus};
-      color:#020617;
-      padding:4px 10px;
-      border-radius:6px;
-      font-size:12px;
-      font-weight:600;
-    ">
-      ${statusTexto}
-    </div>
+      <div style="display:flex; align-items:center; gap:8px; margin:10px 0;">
+        <div style="background:${corStatus}; color:#020617; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:600;">
+          ${statusTexto}
+        </div>
+        <div style="background:${prioridadeCor}; color:#020617; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:5px;">
+          ${prioridadeTexto === "URGENTE" ? "🔥" : prioridadeTexto === "ATENÇÃO" ? "⚠️" : "✔️"}
+          ${prioridadeTexto}
+        </div>
+      </div>
 
-    <div style="
-      background:${prioridadeCor};
-      color:#020617;
-      padding:4px 10px;
-      border-radius:6px;
-      font-size:12px;
-      font-weight:600;
-      display:flex;
-      align-items:center;
-      gap:5px;
-    ">
-      ${prioridadeTexto === "URGENTE" ? "🔥" : prioridadeTexto === "ATENÇÃO" ? "⚠️" : "✔️"}
-      ${prioridadeTexto}
-    </div>
-  </div>
+      ${meuRole === "tecnico" && !c.tecnico
+        ? `<button style="width:100%; padding:8px; border:none; border-radius:8px; background:#2563eb; color:white; font-weight:600; margin-bottom:10px; cursor:pointer;" onclick="assumirChamado('${c._id}')">Assumir chamado</button>`
+        : ""}
 
-  <!-- 🔥 BOTÃO BONITO E ALINHADO -->
-  ${
-    meuRole === "tecnico" && !c.tecnico
-      ? `<button style="
-          width:100%;
-          padding:8px;
-          border:none;
-          border-radius:8px;
-          background:#2563eb;
-          color:white;
-          font-weight:600;
-          margin-bottom:10px;
-          cursor:pointer;
-        " onclick="assumirChamado('${c._id}')">
-          Assumir chamado
-        </button>`
-      : ""
-  }
-
-  <p>🕒 Criado em: ${dataTexto}</p>
-
-  ${
-    c.status === "fechado"
-      ? tempoResolucao
-      : `<p>📅 ${diasRestantes} dias restantes</p>`
-  }
-`;
+      <p>🕒 Criado em: ${dataTexto}</p>
+      ${c.status === "fechado" ? tempoResolucao : `<p>📅 ${diasRestantes} dias restantes</p>`}
+    `;
 
     item.onclick = () => {
       window.location.href = "detalhe.html?id=" + c._id;
@@ -1179,24 +1150,20 @@ if (c.status === "fechado") {
     div.appendChild(item);
   });
 
-  // 🔥 ATUALIZA OS CARDS DO TOPO
+  // Atualiza cards de resumo no topo
   document.getElementById("abertos").innerText = abertos;
   document.getElementById("andamento").innerText = andamento;
   document.getElementById("fechados").innerText = fechados;
   document.getElementById("filtrosChamados").style.display = "flex";
 }
 
-
-// CHAMADOS EXISTENTES
+// Carrega dashboard inicial com chamados ativos (abertos/em andamento)
 async function carregarChamados() {
-
-
-const user = JSON.parse(localStorage.getItem("user"));
-
-if (user?.role === "usuario") {
-  const btn = document.getElementById("btnRelatorios");
-  if (btn) btn.remove(); // 🔥 remove de vez
-}
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user?.role === "usuario") {
+    const btn = document.getElementById("btnRelatorios");
+    if (btn) btn.remove();
+  }
 
   document.getElementById("buscaUsuarios").style.display = "none";
   mostrarBusca(false);
@@ -1207,83 +1174,62 @@ if (user?.role === "usuario") {
   });
 
   let chamados = await res.json();
-
   const div = document.getElementById("listaChamados");
   const usersDiv = document.getElementById("listaUsuarios");
   const resumo = document.querySelector(".resumo");
 
-  // 🔥 CONTROLE DE TELA (O QUE FALTAVA)
+  // Controle de exibição para view de dashboard
   div.style.display = "grid";
   usersDiv.style.display = "none";
   resumo.style.display = "flex";
-
-  // 🔥 TÍTULO
   document.getElementById("tituloPagina").innerText = "Dashboard";
-
-  // limpa apenas chamados
   div.innerHTML = "";
 
-  let abertos = 0;
-  let andamento = 0;
-  let fechados = 0;
+  let abertos = 0, andamento = 0, fechados = 0;
 
-chamados.sort((a, b) => {
-  const dataA = new Date(a.criadoEm || a.createdAt);
-  const dataB = new Date(b.criadoEm || b.createdAt);
-  return dataA - dataB; // 🔥 mais antigo primeiro
-});
+  // Ordena por data de criação (mais antigo primeiro)
+  chamados.sort((a, b) => {
+    const dataA = new Date(a.criadoEm || a.createdAt);
+    const dataB = new Date(b.criadoEm || b.createdAt);
+    return dataA - dataB;
+  });
 
-
+  // Filtra apenas chamados ativos para o dashboard
   const chamadosFiltrados = chamados.filter(c =>
     c.status === "aberto" || c.status === "andamento"
   );
 
   chamadosFiltrados.forEach(c => {
-
     const agora = new Date();
     const criado = new Date(c.criadoEm || c.createdAt);
     const limite = new Date(criado);
-
     limite.setDate(limite.getDate() + 1);
 
     const dataTexto = criado.toLocaleString();
     const diasRestantes = Math.ceil((limite - agora) / (1000 * 60 * 60 * 24));
-    let prioridadeCor = "#22c55e"; // verde
-
-if (diasRestantes <= 1) prioridadeCor = "#ef4444"; // 🔴 urgente
-else if (diasRestantes <= 2) prioridadeCor = "#facc15"; // 🟡 atenção
-
-const prioridadeTexto =
-  diasRestantes <= 1 ? "URGENTE" :
-  diasRestantes <= 2 ? "ATENÇÃO" :
-  "NORMAL";
+    
+    // Prioridade simplificada para dashboard
+    let prioridadeCor = "#22c55e";
+    if (diasRestantes <= 1) prioridadeCor = "#ef4444";
+    else if (diasRestantes <= 2) prioridadeCor = "#facc15";
 
     if (c.status === "aberto") abertos++;
     if (c.status === "andamento") andamento++;
     if (agora > limite && c.status !== "fechado") fechados++;
 
+    const statusTexto = c.status === "aberto" ? "Aberto" :
+                        c.status === "andamento" ? "Em andamento" : "Fechado";
+    const corStatus = c.status === "aberto" ? "#22c55e" :
+                      c.status === "andamento" ? "#facc15" : "#ef4444";
+
     const item = document.createElement("div");
     item.classList.add("card");
-
-    const statusTexto =
-      c.status === "aberto" ? "Aberto" :
-      c.status === "andamento" ? "Em andamento" :
-      "Fechado";
-
-    const corStatus =
-      c.status === "aberto" ? "#22c55e" :
-      c.status === "andamento" ? "#facc15" :
-      "#ef4444";
 
     item.innerHTML = `
       <strong>${c.titulo}</strong><br>
       ${c.descricao}<br>
       <small>Categoria: ${c.categoria}</small><br>
-
-      <div class="status" style="background:${corStatus}">
-        ${statusTexto}
-      </div>
-
+      <div class="status" style="background:${corStatus}">${statusTexto}</div>
       <p>🕒 Criado em: ${dataTexto}</p>
       <p>📅 ${diasRestantes} dias restantes</p>
     `;
@@ -1295,15 +1241,17 @@ const prioridadeTexto =
     div.appendChild(item);
   });
 
-  // resumo
   document.getElementById("abertos").innerText = abertos;
   document.getElementById("andamento").innerText = andamento;
   document.getElementById("fechados").innerText = fechados;
   document.getElementById("filtrosChamados").style.display = "none";
-
 }
 
-// CHAT com o técnico
+// ============================================================================
+// FUNÇÕES DE CHAT EM TEMPO REAL
+// ============================================================================
+
+// Abre chat flutuante para um chamado específico
 function abrirChat(chamado) {
   chamadoAtual = chamado;
   document.getElementById("chatTitulo").innerText = chamado.titulo;
@@ -1311,10 +1259,12 @@ function abrirChat(chamado) {
   renderMensagens();
 }
 
+// Fecha chat flutuante
 function fecharChat() {
   document.getElementById("chatBox").style.display = "none";
 }
 
+// Renderiza mensagens do chat com diferenciação visual por autor
 function renderMensagens() {
   const div = document.getElementById("mensagens");
   div.innerHTML = "";
@@ -1323,7 +1273,6 @@ function renderMensagens() {
 
   chamadoAtual.mensagens.forEach(m => {
     const el = document.createElement("div");
-
     el.classList.add("msg");
 
     if (m.autor === meuRole) {
@@ -1332,18 +1281,14 @@ function renderMensagens() {
       el.classList.add("msg-other");
     }
 
-    el.innerHTML = `
-      <small>${m.nome || m.autor}</small><br>
-      ${m.texto}
-    `;
-
+    el.innerHTML = `<small>${m.nome || m.autor}</small><br>${m.texto}`;
     div.appendChild(el);
   });
 
-  div.scrollTop = div.scrollHeight;
+  div.scrollTop = div.scrollHeight; // Rola para última mensagem
 }
 
-// ENVIAR
+// Envia nova mensagem para o chamado atual via API
 async function enviar() {
   const texto = document.getElementById("msg").value;
   const token = localStorage.getItem("token");
@@ -1361,17 +1306,20 @@ async function enviar() {
 
   document.getElementById("msg").value = "";
 
+  // Recarrega dados do chamado para atualizar chat
   const res = await fetch("/chamados", {
     headers: { Authorization: "Bearer " + token }
   });
-
   const chamados = await res.json();
   chamadoAtual = chamados.find(c => c._id === chamadoAtual._id);
 
   renderMensagens();
 }
 
-// OUTROS
+// ============================================================================
+// FUNÇÕES DE NAVEGAÇÃO E UTILITÁRIOS
+// ============================================================================
+
 function abrirNovoChamado() {
   window.location.href = "chamados.html";
 }
@@ -1381,9 +1329,9 @@ function logout() {
   window.location.href = "login.html";
 }
 
+// Altera status de um chamado via API e recarrega lista
 async function mudarStatus(id, status) {
   if (!status) return;
-
   const token = localStorage.getItem("token");
 
   const res = await fetch("/chamados/" + id + "/status", {
@@ -1396,12 +1344,11 @@ async function mudarStatus(id, status) {
   });
 
   const data = await res.json();
-
   alert(data.message || data.error);
-
   carregarChamados();
 }
 
+// Exibe notificação flutuante com animação de entrada e saída
 function mostrarNotificacao(nome, texto) {
   const box = document.getElementById("notificacao");
   const nomeEl = document.getElementById("notifNome");
@@ -1410,176 +1357,147 @@ function mostrarNotificacao(nome, texto) {
   nomeEl.innerText = nome || "Usuário";
   textoEl.innerText = texto || "Nova mensagem";
 
-  // estado inicial (fora da tela)
   box.style.display = "block";
   box.style.opacity = "0";
   box.style.transform = "translateX(100px)";
 
-  // anima entrada
   setTimeout(() => {
     box.style.opacity = "1";
     box.style.transform = "translateX(0)";
   }, 10);
 
-  // anima saída
   setTimeout(() => {
     box.style.opacity = "0";
     box.style.transform = "translateX(100px)";
-
-    setTimeout(() => {
-      box.style.display = "none";
-    }, 300);
+    setTimeout(() => { box.style.display = "none"; }, 300);
   }, 3000);
 }
 
-let ultimaMensagemGlobal = localStorage.getItem("ultimaMsgId");
+// ============================================================================
+// POLLING DE NOTIFICAÇÕES EM TEMPO REAL (INTERVALO DE 3 SEGUNDOS)
+// ============================================================================
 
+let ultimaMensagemGlobal = localStorage.getItem("ultimaMsgId");
 
 setInterval(async () => {
   try {
-     console.log("RODANDO INTERVAL");
     const token = localStorage.getItem("token");
-
     const res = await fetch("/chamados", {
       headers: { Authorization: "Bearer " + token }
     });
-
     const chamados = await res.json();
 
+    // Coleta todas as mensagens de todos os chamados
     let ultimaMsg = null;
-
     let todasMensagens = [];
 
-chamados.forEach(c => {
-  if (c.mensagens?.length) {
-    c.mensagens.forEach(m => {
-      todasMensagens.push({
-        ...m,
-        chamadoId: c._id
-      });
+    chamados.forEach(c => {
+      if (c.mensagens?.length) {
+        c.mensagens.forEach(m => {
+          todasMensagens.push({ ...m, chamadoId: c._id });
+        });
+      }
     });
-  }
-});
 
-todasMensagens.forEach(m => {
-  if (!ultimaMsg) {
-    ultimaMsg = m;
-  } else {
-    const d1 = new Date(ultimaMsg.data || 0).getTime();
-    const d2 = new Date(m.data || 0).getTime();
-
-    if (d2 > d1) {
-      ultimaMsg = m;
-    }
-  }
-});
-    console.log("ULTIMA MSG:", ultimaMsg);
+    // Encontra a mensagem mais recente por timestamp
+    todasMensagens.forEach(m => {
+      if (!ultimaMsg) {
+        ultimaMsg = m;
+      } else {
+        const d1 = new Date(ultimaMsg.data || 0).getTime();
+        const d2 = new Date(m.data || 0).getTime();
+        if (d2 > d1) ultimaMsg = m;
+      }
+    });
 
     if (!ultimaMsg) return;
 
     const idAtual = String(ultimaMsg._id);
 
+    // Notifica apenas se for mensagem nova e de outro usuário
     if (!ultimaMensagemGlobal || ultimaMensagemGlobal !== idAtual) {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const meuId = payload.id || payload._id;
 
-  const payload = JSON.parse(atob(token.split(".")[1]));
-  const meuId = payload.id || payload._id;
+      if (String(ultimaMsg.autor) !== String(meuId)) {
+        mostrarNotificacao(ultimaMsg.nome, ultimaMsg.texto);
+        notificacoesNaoLidas++;
 
-  if (String(ultimaMsg.autor) !== String(meuId)) {
+        const badge = document.getElementById("notifCount");
+        badge.innerText = notificacoesNaoLidas;
+        badge.style.display = "inline-block";
 
-    mostrarNotificacao(ultimaMsg.nome, ultimaMsg.texto);
-
-    notificacoesNaoLidas++;
-
-    const badge = document.getElementById("notifCount");
-    badge.innerText = notificacoesNaoLidas;
-    badge.style.display = "inline-block";
-
-    listaNotificacoes.unshift({
-      ...ultimaMsg,
-      lida: false
-    });
-  }
-
-  // 🔥 ATUALIZA AQUI DENTRO
-  ultimaMensagemGlobal = idAtual;
-localStorage.setItem("ultimaMsgId", idAtual);
-}
-
+        listaNotificacoes.unshift({ ...ultimaMsg, lida: false });
+      }
+      ultimaMensagemGlobal = idAtual;
+      localStorage.setItem("ultimaMsgId", idAtual);
+    }
   } catch (e) {
     console.log("Erro dashboard:", e);
   }
 }, 3000);
 
-document.getElementById("notifBtn").onclick = () => {
+// ============================================================================
+// GERENCIAMENTO DA CAIXA DE NOTIFICAÇÕES
+// ============================================================================
 
+document.getElementById("notifBtn").onclick = () => {
   const box = document.getElementById("notifBox");
 
-  // 🔥 SE JÁ ESTÁ ABERTO → FECHA E LIMPA
- if (box.style.display === "block") {
-  listaNotificacoes = []; // 🔥 limpa de vez
-  box.style.display = "none";
-  box.innerHTML = "";
-  return;
-}
+  // Toggle: se aberto, fecha e limpa; se fechado, monta e exibe
+  if (box.style.display === "block") {
+    listaNotificacoes = [];
+    box.style.display = "none";
+    box.innerHTML = "";
+    return;
+  }
 
-  // 🔥 LIMPA ANTES DE MONTAR
   box.innerHTML = "";
 
   if (listaNotificacoes.length === 0) {
     box.innerHTML = "<p style='padding:10px'>Sem notificações</p>";
   } else {
-
     listaNotificacoes.forEach((n, index) => {
       const item = document.createElement("div");
-
       item.style.padding = "10px";
       item.style.borderBottom = "1px solid #1e293b";
       item.style.cursor = "pointer";
 
-      if (!n.lida) {
-        item.style.background = "#0f172a";
-      }
+      if (!n.lida) item.style.background = "#0f172a";
 
-      item.innerHTML = `
-        <strong>${n.nome}</strong><br>
-        <span style="font-size:12px">${n.texto}</span>
-      `;
+      item.innerHTML = `<strong>${n.nome}</strong><br><span style="font-size:12px">${n.texto}</span>`;
 
       item.onclick = () => {
         listaNotificacoes[index].lida = true;
-
-        listaNotificacoes = []; // 🔥 ESSENCIAL
-
-box.style.display = "none";
-box.innerHTML = "";
-
+        listaNotificacoes = [];
+        box.style.display = "none";
+        box.innerHTML = "";
         window.location.href = "detalhe.html?id=" + n.chamadoId;
-        console.log("CLICOU E LIMPOU");
       };
 
       box.appendChild(item);
     });
   }
 
-  // 🔥 SÓ ABRE AQUI (UMA VEZ)
   box.style.display = "block";
-
-  // 🔥 limpa badge
   notificacoesNaoLidas = 0;
   document.getElementById("notifCount").style.display = "none";
 };
 
+// ============================================================================
+// INICIALIZAÇÃO E ANIMAÇÃO DE FUNDO
+// ============================================================================
+
 carregarPerfil();
 carregarChamados();
 
+// Configuração do canvas para animação de partículas
 const canvas = document.getElementById("bg");
 const ctx = canvas.getContext("2d");
-
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 let particles = [];
-
 for (let i = 0; i < 80; i++) {
   particles.push({
     x: Math.random() * canvas.width,
@@ -1590,6 +1508,7 @@ for (let i = 0; i < 80; i++) {
   });
 }
 
+// Loop de animação: atualiza posição e redesenha partículas
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -1611,22 +1530,19 @@ function animate() {
 
 animate();
 
+// ============================================================================
+// FUNÇÕES DE FILTRO E BUSCA
+// ============================================================================
+
+// Filtra chamados por status (botões) e/ou texto livre (busca)
 function filtrarChamados(tipo = null) {
-
-  // 🔥 pega texto da busca
   const texto = document.getElementById("inputBusca")?.value.toLowerCase() || "";
-
-  // 🔥 começa com todos
   let filtrados = chamadosGlobal;
 
-  // 🔥 aplica filtro por status (botões)
   if (tipo && tipo !== "todos") {
-    filtrados = filtrados.filter(c =>
-      c.status.toLowerCase() === tipo
-    );
+    filtrados = filtrados.filter(c => c.status.toLowerCase() === tipo);
   }
 
-  // 🔥 aplica busca (texto)
   filtrados = filtrados.filter(c =>
     (c.titulo || "").toLowerCase().includes(texto) ||
     (c.descricao || "").toLowerCase().includes(texto) ||
@@ -1635,54 +1551,49 @@ function filtrarChamados(tipo = null) {
 
   mostrarTodosChamados(filtrados);
 
-  // 🔥 botão ativo (se clicado)
+  // Atualiza estado visual dos botões de filtro
   if (tipo) {
     document.querySelectorAll(".filtros button").forEach(btn => {
       btn.classList.remove("active");
     });
-
     event?.target?.classList.add("active");
   }
 }
 
+// Permite que técnico assuma chamado disponível via API
 async function assumirChamado(id) {
-
   const token = localStorage.getItem("token");
-
   await fetch("/chamados/" + id + "/assumir", {
     method: "PUT",
     headers: { Authorization: "Bearer " + token }
   });
-
   carregarChamados();
 }
 
+// Helpers para exibir/ocultar controles de UI
 function mostrarBusca(mostrar) {
   const busca = document.getElementById("buscaContainer");
   if (!busca) return;
-
   busca.style.display = mostrar ? "block" : "none";
 }
-
 
 function mostrarFiltros(mostrar) {
   const filtros = document.querySelector(".filtros");
   if (!filtros) return;
-
   filtros.style.display = mostrar ? "flex" : "none";
 }
 
+// Filtra usuários por nome ou email
 function filtrarUsuarios() {
   const texto = document.getElementById("inputBuscaUsuario").value.toLowerCase();
-
   const filtrados = usuariosGlobal.filter(u =>
     (u.nome || "").toLowerCase().includes(texto) ||
     (u.email || "").toLowerCase().includes(texto)
   );
-
   mostrarUsuarios(filtrados);
 }
 
+// Renderiza lista de usuários filtrados
 function mostrarUsuarios(usuarios) {
   const div = document.getElementById("listaUsuarios");
   div.innerHTML = "";
@@ -1695,22 +1606,14 @@ function mostrarUsuarios(usuarios) {
       <strong>${u.nome}</strong><br>
       ${u.email}<br>
       <small>Tipo: ${u.role}</small><br>
-
-      ${
-        meuRole === "admin" && u.role === "usuario"
-          ? `<button onclick="promover('${u._id}')">
-               Promover para técnico
-             </button>`
-          : ""
-      }
+      ${meuRole === "admin" && u.role === "usuario"
+        ? `<button onclick="promover('${u._id}')">Promover para técnico</button>`
+        : ""}
     `;
 
     div.appendChild(item);
   });
 }
-
-
-
 </script>
 
 </body>

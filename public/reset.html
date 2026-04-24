@@ -1,11 +1,25 @@
+<!-- ============================================================================
+  DOCUMENTO HTML: PÁGINA DE REDEFINIÇÃO DE SENHA
+  Interface para atualização de credenciais com validação e integração com API
+============================================================================ -->
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- Metadados e título da página -->
   <title>Reset</title>
+  
+  <!-- Link para folha de estilos externa (estilos globais do sistema) -->
   <link rel="stylesheet" href="style.css">
+  
+  <!-- ========================================================================
+    ESTILOS INTERNOS: CSS específico da página de reset de senha
+    Inclui reset, layout, animações, componentes e responsividade
+  ======================================================================== -->
   <style>
+    /* Reset básico de margens e box-sizing para consistência entre navegadores */
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* Configuração do corpo: centralização, fundo com gradiente e overflow controlado */
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       min-height: 100vh;
@@ -19,7 +33,7 @@
       position: relative;
     }
 
-    /* Canvas de fundo */
+    /* Canvas de fundo: elemento para animação de partículas, sem interatividade */
     #bg {
       position: fixed;
       top: 0;
@@ -30,7 +44,7 @@
       pointer-events: none;
     }
 
-    /* Efeitos de brilho no fundo */
+    /* Efeitos de brilho flutuante no fundo com animação suave (tema laranja/vermelho) */
     body::before,
     body::after {
       content: '';
@@ -66,7 +80,7 @@
       66% { transform: translate(-15px, 25px) scale(0.97); }
     }
 
-    /* Container principal */
+    /* Container principal: estilo glassmorphism com bordas, sombra e detalhe superior */
     .container {
       position: relative;
       z-index: 1;
@@ -87,16 +101,11 @@
     }
 
     @keyframes cardEnter {
-      from {
-        opacity: 0;
-        transform: scale(0.98) translateY(25px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
+      from { opacity: 0; transform: scale(0.98) translateY(25px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
     }
 
+    /* Detalhe decorativo superior no container com gradiente temático */
     .container::before {
       content: '';
       position: absolute;
@@ -109,6 +118,7 @@
       border-radius: 0 0 12px 12px;
     }
 
+    /* Título do formulário com ícone decorativo e divisor inferior */
     .container h2 {
       margin: 0 0 28px;
       text-align: center;
@@ -140,7 +150,7 @@
       border-radius: 2px;
     }
 
-    /* Inputs */
+    /* Estilos base para campos de input: email e senha */
     input[type="email"],
     input[type="password"] {
       width: 100%;
@@ -160,6 +170,7 @@
       font-weight: 400;
     }
 
+    /* Estado de foco: destaque visual com cor temática e sombra */
     input:focus {
       border-color: #f59e0b;
       background: rgba(2, 6, 23, 1);
@@ -169,7 +180,7 @@
       transform: translateY(-1px);
     }
 
-    /* Botão principal */
+    /* Botão principal: gradiente laranja, efeito de brilho ao hover e transições */
     button {
       width: 100%;
       padding: 14px 20px;
@@ -213,7 +224,7 @@
       transform: translateY(0);
     }
 
-    /* Mensagem de status */
+    /* Mensagem de status: feedback visual dinâmico para sucesso ou erro */
     #msg {
       margin-top: 18px;
       font-size: 14px;
@@ -227,7 +238,7 @@
       display: none;
     }
 
-    /* Cores dinâmicas para a mensagem */
+    /* Cores dinâmicas para a mensagem: padrão âmbar, sucesso em verde, erro em vermelho */
     #msg { color: #fbbf24; }
     #msg:not(:empty):not([style*="color: #ef4444"]) { 
       color: #10b981; 
@@ -238,59 +249,33 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Responsivo */
+    /* Media query para responsividade em mobile */
     @media (max-width: 480px) {
       body { padding: 16px; }
-
-      .container {
-        padding: 32px 28px;
-        border-radius: 20px;
-      }
-
-      .container h2 {
-        font-size: 20px;
-        margin-bottom: 24px;
-      }
-
-      input {
-        padding: 13px 15px;
-        font-size: 14px;
-        margin-bottom: 16px;
-      }
-
-      button {
-        padding: 13px 18px;
-        font-size: 14px;
-      }
+      .container { padding: 32px 28px; border-radius: 20px; }
+      .container h2 { font-size: 20px; margin-bottom: 24px; }
+      input { padding: 13px 15px; font-size: 14px; margin-bottom: 16px; }
+      button { padding: 13px 18px; font-size: 14px; }
     }
 
-    /* Acessibilidade */
+    /* Acessibilidade: foco visível para navegação via teclado */
     input:focus-visible,
     button:focus-visible {
       outline: 2px solid #f59e0b;
       outline-offset: 2px;
     }
 
-    /* Animação de entrada dos inputs */
-    input {
-      animation: slideIn 0.4s ease backwards;
-    }
-
+    /* Animação de entrada escalonada para os campos de input */
+    input { animation: slideIn 0.4s ease backwards; }
     input:nth-child(1) { animation-delay: 0.1s; }
     input:nth-child(2) { animation-delay: 0.2s; }
 
     @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateX(-15px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
+      from { opacity: 0; transform: translateX(-15px); }
+      to { opacity: 1; transform: translateX(0); }
     }
 
-    /* Efeito de erro na mensagem */
+    /* Efeito de erro na mensagem: animação de shake para chamar atenção */
     #msg[style*="color: rgb(239, 68, 68)"],
     #msg[style*="color:#ef4444"] {
       color: #f87171 !important;
@@ -304,35 +289,51 @@
     }
   </style>
 </head>
+
+<!-- ============================================================================
+  CORPO DA PÁGINA: ESTRUTURA VISUAL DO FORMULÁRIO DE RESET
+============================================================================ -->
 <body>
 
-<!-- Canvas de fundo para partículas -->
+<!-- Canvas para animação de fundo (partículas) -->
 <canvas id="bg"></canvas>
 
+<!-- Container principal do formulário de redefinição de senha -->
 <div class="container">
   <h2>Resetar Senha</h2>
 
+  <!-- Campo de email para identificar a conta a ser atualizada -->
   <input type="email" id="email" placeholder="seu@email.com" autocomplete="email">
+  
+  <!-- Campo de nova senha com autocomplete para segurança do navegador -->
   <input type="password" id="senha" placeholder="Nova senha segura" autocomplete="new-password">
 
+  <!-- Botão de ação: aciona função resetar() -->
   <button onclick="resetar()">🔄 Atualizar</button>
 
+  <!-- Área para exibição de mensagens de feedback (sucesso, erro ou validação) -->
   <p id="msg"></p>
 </div>
 
-<!-- SEU SCRIPT ORIGINAL - ABSOLUTAMENTE INTACTO -->
+<!-- ============================================================================
+  JAVASCRIPT: LÓGICA DE REDEFINIÇÃO DE SENHA
+============================================================================ -->
 <script>
+// Função principal: valida campos, envia nova senha para API e gerencia feedback
 async function resetar() {
+  // Captura valores dos campos de email e nova senha
   const email = document.getElementById("email").value;
   const senha = document.getElementById("senha").value;
   const msg = document.getElementById("msg");
 
+  // Validação básica: ambos os campos são obrigatórios
   if (!email || !senha) {
     msg.innerText = "Preencha todos os campos";
     return;
   }
 
   try {
+    // Requisição POST para endpoint de reset com corpo JSON e headers apropriados
     const res = await fetch("/reset-password", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
@@ -341,11 +342,13 @@ async function resetar() {
 
     const data = await res.json();
 
+    // Tratamento de erro: exibe mensagem retornada pela API ou genérica
     if (!res.ok) {
       msg.innerText = data.error || "Erro ao atualizar";
       return;
     }
 
+    // Sucesso: exibe confirmação e redireciona para login após breve delay
     msg.innerText = "Senha atualizada!";
 
     setTimeout(() => {
@@ -353,21 +356,29 @@ async function resetar() {
     }, 1000);
 
   } catch (err) {
+    // Tratamento de exceção de rede ou servidor indisponível
     msg.innerText = "Erro ao conectar com o servidor";
   }
 }
 </script>
 
-<!-- Script das partículas de fundo (consistente com outras páginas) -->
+<!-- ============================================================================
+  ANIMAÇÃO DE FUNDO: CANVAS COM PARTÍCULAS FLUTUANTES
+  Mantém consistência visual com outras páginas do sistema
+============================================================================ -->
 <script>
+// Configuração do canvas para animação de partículas
 const canvas = document.getElementById("bg");
 const ctx = canvas.getContext("2d");
 
+// Define dimensões do canvas conforme tamanho da janela
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// Array para armazenar objetos que representam as partículas
 let particles = [];
 
+// Inicializa 80 partículas com posição, tamanho e velocidade aleatórios
 for (let i = 0; i < 80; i++) {
   particles.push({
     x: Math.random() * canvas.width,
@@ -378,6 +389,7 @@ for (let i = 0; i < 80; i++) {
   });
 }
 
+// Loop de animação: limpa canvas, atualiza posição das partículas e redesenha
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -385,6 +397,7 @@ function animate() {
     p.x += p.speedX;
     p.y += p.speedY;
 
+    // Inverte direção ao atingir bordas do canvas para efeito de quique suave
     if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
     if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
 
@@ -397,8 +410,10 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
+// Inicia o loop de animação
 animate();
 
+// Ajusta dimensões do canvas ao redimensionar a janela
 window.addEventListener("resize", () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;

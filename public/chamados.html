@@ -1,11 +1,25 @@
+<!-- ============================================================================
+  DOCUMENTO HTML: PÁGINA DE CRIAÇÃO DE NOVO CHAMADO
+  Estrutura completa com CSS embutido, formulário e JavaScript para interação
+============================================================================ -->
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- Metadados e título da página -->
   <title>Novo Chamado</title>
+  
+  <!-- Link para folha de estilos externa (estilos globais do sistema) -->
   <link rel="stylesheet" href="style.css">
+  
+  <!-- ========================================================================
+    ESTILOS INTERNOS: CSS específico desta página
+    Inclui reset, layout, animações, temas e responsividade
+  ======================================================================== -->
   <style>
+    /* Reset básico de margens e box-sizing para consistência entre navegadores */
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* Configuração do corpo: fonte, centralização e fundo com gradiente animado */
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       display: flex;
@@ -18,7 +32,7 @@
       position: relative;
     }
 
-    /* Canvas de fundo */
+    /* Canvas de fundo: elemento para animação de partículas, sem interatividade */
     #bg {
       position: fixed;
       top: 0;
@@ -29,7 +43,7 @@
       pointer-events: none;
     }
 
-    /* Efeito de brilho sutil no fundo */
+    /* Efeito de brilho sutil no fundo com animação de pulso */
     body::before {
       content: '';
       position: fixed;
@@ -48,7 +62,7 @@
       50% { opacity: 1; }
     }
 
-    /* Animação de entrada */
+    /* Animação de entrada: fade-in com movimento suave para o container principal */
     @keyframes fadeInUp {
       from {
         opacity: 0;
@@ -60,7 +74,7 @@
       }
     }
 
-    /* Caixa principal */
+    /* Container principal do formulário: estilo glassmorphism com bordas e sombra */
     .box {
       position: relative;
       z-index: 1;
@@ -80,6 +94,7 @@
       animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
+    /* Detalhe decorativo superior no container */
     .box::before {
       content: '';
       position: absolute;
@@ -92,6 +107,7 @@
       border-radius: 0 0 10px 10px;
     }
 
+    /* Título do formulário com divisores laterais decorativos */
     .box h2 {
       margin-bottom: 28px;
       font-weight: 700;
@@ -113,7 +129,7 @@
       background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.4), transparent);
     }
 
-    /* Grupos de input */
+    /* Grupos de input: estrutura vertical para labels e campos */
     .input-group {
       margin-bottom: 20px;
       position: relative;
@@ -129,6 +145,7 @@
       text-transform: uppercase;
     }
 
+    /* Estilos base para inputs, textareas e selects */
     .input-group input,
     .input-group textarea,
     .input-group select {
@@ -148,6 +165,7 @@
       color: #64748b;
     }
 
+    /* Configuração específica para textarea: redimensionamento vertical limitado */
     .input-group textarea {
       resize: vertical;
       min-height: 100px;
@@ -155,6 +173,7 @@
       line-height: 1.5;
     }
 
+    /* Select personalizado: remove aparência nativa e adiciona ícone de seta */
     .input-group select {
       cursor: pointer;
       appearance: none;
@@ -164,7 +183,7 @@
       padding-right: 40px;
     }
 
-    /* Estados de foco */
+    /* Estados de foco: destaque visual para melhor usabilidade */
     .input-group input:focus,
     .input-group textarea:focus,
     .input-group select:focus {
@@ -176,7 +195,7 @@
       transform: translateY(-1px);
     }
 
-    /* Botão principal */
+    /* Botão principal: gradiente, hover com efeito de brilho e transições suaves */
     button {
       width: 100%;
       padding: 14px 20px;
@@ -194,6 +213,7 @@
       letter-spacing: 0.2px;
     }
 
+    /* Efeito de brilho ao passar o mouse no botão */
     button::before {
       content: '';
       position: absolute;
@@ -220,7 +240,7 @@
       transform: translateY(0);
     }
 
-    /* Estado de loading */
+    /* Estado de loading: desabilita interatividade visual durante requisição */
     button.loading {
       background: linear-gradient(135deg, #1e293b, #334155);
       cursor: wait;
@@ -232,7 +252,7 @@
       box-shadow: none;
     }
 
-    /* Botão voltar */
+    /* Botão secundário "Voltar": estilo minimalista com hover sutil */
     .voltar {
       background: transparent;
       border: 1px solid rgba(30, 41, 59, 0.8);
@@ -248,7 +268,7 @@
       transform: translateY(-1px);
     }
 
-    /* Mensagem de status */
+    /* Mensagem de status: exibição de erros ou sucesso com animação */
     #msg {
       margin-top: 16px;
       font-size: 14px;
@@ -269,13 +289,13 @@
       75% { transform: translateX(4px); }
     }
 
-    /* Ícone de sucesso na mensagem */
+    /* Variante de sucesso para a mensagem */
     #msg.success {
       color: #34d399;
       animation: fadeInUp 0.3s ease;
     }
 
-    /* Responsivo */
+    /* Media query para telas menores: ajustes de padding e tamanhos de fonte */
     @media (max-width: 520px) {
       .box {
         padding: 28px 24px;
@@ -300,7 +320,7 @@
       }
     }
 
-    /* Acessibilidade: foco visível para teclado */
+    /* Acessibilidade: foco visível para navegação via teclado */
     .input-group input:focus-visible,
     .input-group textarea:focus-visible,
     .input-group select:focus-visible,
@@ -309,7 +329,7 @@
       outline-offset: 2px;
     }
 
-    /* Efeito de partículas sutis nos cantos */
+    /* Detalhes decorativos nos cantos do container */
     .box::after {
       content: '';
       position: absolute;
@@ -335,20 +355,26 @@
     }
   </style>
 </head>
+
+<!-- ============================================================================
+  CORPO DA PÁGINA: ESTRUTURA VISUAL E FORMULÁRIO
+============================================================================ -->
 <body>
 
+<!-- Canvas para animação de fundo (partículas/estrelas) -->
 <canvas id="bg"></canvas>
 
+<!-- Container principal do formulário -->
 <div class="box">
   <h2>✨ Novo Chamado</h2>
 
-  <!-- TÍTULO -->
+  <!-- Campo: Título do chamado -->
   <div class="input-group">
     <label for="titulo">Título</label>
     <input type="text" id="titulo" placeholder="Ex: Impressora não conecta na rede">
   </div>
 
-  <!-- CATEGORIA -->
+  <!-- Campo: Categoria do chamado (select com opções pré-definidas) -->
   <div class="input-group">
     <label for="categoria">Categoria</label>
     <select id="categoria">
@@ -361,49 +387,54 @@
     </select>
   </div>
 
-  <!-- DESCRIÇÃO -->
+  <!-- Campo: Descrição detalhada do problema -->
   <div class="input-group">
     <label for="descricao">Descrição</label>
     <textarea id="descricao" placeholder="Descreva detalhadamente o problema..." rows="4"></textarea>
   </div>
 
-  <!-- EMPRESA -->
+  <!-- Campo: Nome da empresa solicitante -->
   <div class="input-group">
     <label for="empresa">Empresa</label>
     <input type="text" id="empresa" placeholder="Nome da empresa">
   </div>
 
-  <!-- SETOR -->
+  <!-- Campo: Setor/departamento da solicitação -->
   <div class="input-group">
     <label for="setor">Setor</label>
     <input type="text" id="setor" placeholder="Ex: Financeiro, TI, RH">
   </div>
 
-  <!-- ANEXO -->
+  <!-- Campo: Upload de arquivo opcional (imagens, PDF, documentos) -->
   <div class="input-group">
     <label for="arquivo">Anexo (opcional)</label>
     <input type="file" id="arquivo" accept="image/*,.pdf,.doc,.docx">
   </div>
 
-  <!-- BOTÃO -->
+  <!-- Botão de envio: aciona a função criarChamado() -->
   <button id="btn" onclick="criarChamado()">🚀 Enviar Chamado</button>
 
-  <!-- MENSAGEM -->
+  <!-- Área para exibição de mensagens de feedback (sucesso ou erro) -->
   <p id="msg"></p>
 
-  <!-- VOLTAR -->
+  <!-- Botão secundário: retorna para a página de dashboard -->
   <button class="voltar" onclick="voltar()">← Voltar para Dashboard</button>
 </div>
 
-<!-- SEU SCRIPT ORIGINAL - ABSOLUTAMENTE INTACTO -->
+<!-- ============================================================================
+  JAVASCRIPT: LÓGICA DE SUBMISSÃO, VALIDAÇÃO E ANIMAÇÃO DE FUNDO
+============================================================================ -->
 <script>
 
+// Gera um identificador único para o chamado baseado no timestamp atual
 function gerarNumeroChamado() {
   return "CH-" + Date.now();
 }
 
+// Função principal: coleta dados do formulário, valida e envia para a API
 async function criarChamado() {
 
+  // Coleta valores dos campos do formulário
   const titulo = document.getElementById("titulo").value;
   const descricao = document.getElementById("descricao").value;
   const categoria = document.getElementById("categoria").value;
@@ -411,18 +442,22 @@ async function criarChamado() {
   const setor = document.getElementById("setor").value;
   const arquivo = document.getElementById("arquivo").files[0];
 
+  // Recupera token de autenticação armazenado no localStorage
   const token = localStorage.getItem("token");
   const msg = document.getElementById("msg");
   const btn = document.getElementById("btn");
 
+  // Validação básica: título e descrição são obrigatórios
   if (!titulo || !descricao) {
     msg.innerText = "Preencha todos os campos!";
     return;
   }
 
+  // Atualiza estado visual do botão para indicar processamento
   btn.innerText = "Enviando...";
   btn.classList.add("loading");
 
+  // Prepara objeto FormData para envio multipart (necessário para upload de arquivo)
   const formData = new FormData();
 
   formData.append("titulo", titulo);
@@ -432,10 +467,12 @@ async function criarChamado() {
   formData.append("setor", setor);
   formData.append("numero", gerarNumeroChamado());
 
+  // Anexa arquivo apenas se um foi selecionado pelo usuário
   if (arquivo) {
     formData.append("arquivo", arquivo);
   }
 
+  // Requisição POST para a API com token de autenticação no header
   const res = await fetch("/chamados", {
     method: "POST",
     headers: {
@@ -446,6 +483,7 @@ async function criarChamado() {
 
   const data = await res.json();
 
+  // Tratamento de erro: exibe mensagem retornada pela API e restaura botão
   if (res.status !== 200) {
     msg.innerText = data.error;
     btn.innerText = "Enviar Chamado";
@@ -453,6 +491,7 @@ async function criarChamado() {
     return;
   }
 
+  // Sucesso: exibe confirmação e redireciona para o dashboard após breve delay
   msg.innerText = "Chamado criado com sucesso!";
 
   setTimeout(() => {
@@ -460,20 +499,26 @@ async function criarChamado() {
   }, 800);
 }
 
+// Função de navegação: retorna para a página principal do sistema
 function voltar() {
   window.location.href = "dashboard.html";
 }
 
-
+// ============================================================================
+// ANIMAÇÃO DE FUNDO: CANVAS COM PARTÍCULAS (ESTRELAS)
+// ============================================================================
 
 const canvas = document.getElementById("bg");
 const ctx = canvas.getContext("2d");
 
+// Define dimensões do canvas conforme tamanho da janela
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// Array para armazenar objetos que representam as partículas
 let stars = [];
 
+// Inicializa 120 partículas com posição, tamanho e velocidade aleatórios
 for (let i = 0; i < 120; i++) {
   stars.push({
     x: Math.random() * canvas.width,
@@ -483,12 +528,14 @@ for (let i = 0; i < 120; i++) {
   });
 }
 
+// Loop de animação: limpa canvas, atualiza posição das partículas e redesenha
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   stars.forEach(star => {
     star.y += star.speed;
 
+    // Reinicia partícula que saiu da tela, com nova posição horizontal aleatória
     if (star.y > canvas.height) {
       star.y = 0;
       star.x = Math.random() * canvas.width;
@@ -503,9 +550,10 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
+// Inicia o loop de animação
 animate();
 
-/* responsivo */
+/* Ajuste de responsividade: recalcula dimensões do canvas ao redimensionar janela */
 window.addEventListener("resize", () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;

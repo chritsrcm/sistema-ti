@@ -1,68 +1,96 @@
+<!-- ============================================================================
+  DOCUMENTO HTML: PÁGINA DE LISTAGEM DE CHAMADOS DO USUÁRIO
+  Interface simples para visualização e acesso aos chamados do usuário logado
+============================================================================ -->
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- Metadados e título da página -->
   <title>Meus Chamados</title>
+  
+  <!-- Link para folha de estilos externa (estilos globais do sistema) -->
   <link rel="stylesheet" href="style.css">
 </head>
+
+<!-- ============================================================================
+  CORPO DA PÁGINA: ESTRUTURA VISUAL BÁSICA
+============================================================================ -->
 <body>
 
+<!-- Container principal com lista de chamados e botão de navegação -->
 <div class="container">
   <h2>Chamados</h2>
 
+  <!-- Área dinâmica onde os cards de chamados serão renderizados -->
   <div id="lista"></div>
 
+  <!-- Botão para retornar à página de dashboard -->
   <button onclick="voltar()">Voltar</button>
 </div>
 
+<!-- ============================================================================
+  JAVASCRIPT: LÓGICA DE CARREGAMENTO E RENDERIZAÇÃO DE CHAMADOS
+============================================================================ -->
 <script>
+// Função principal: busca chamados da API e renderiza lista interativa
 async function carregarChamados() {
+  // Recupera token de autenticação armazenado no localStorage
   const token = localStorage.getItem("token");
 
-  // 🔒 proteção
+  // Validação de segurança: redireciona para login se não houver token válido
   if (!token) {
     window.location.href = "login.html";
     return;
   }
 
+  // Requisição GET para endpoint de chamados com token no header de autorização
   const res = await fetch("/chamados", {
     headers: {
       Authorization: "Bearer " + token
     }
   });
 
+  // Parse da resposta JSON para array de objetos de chamado
   const chamados = await res.json();
 
+  // Seleciona container da lista e limpa conteúdo anterior (para re-renderizações)
   const lista = document.getElementById("lista");
   lista.innerHTML = "";
 
+  // Itera sobre cada chamado e cria elemento visual interativo
   chamados.forEach(c => {
     const div = document.createElement("div");
 
+    // Estilos inline para estrutura visual básica de cada card
     div.style.marginBottom = "10px";
     div.style.padding = "10px";
     div.style.background = "#334155";
     div.style.borderRadius = "5px";
     div.style.cursor = "pointer";
 
-    //  clique no botão de chamados
+    // Evento de clique: redireciona para página de chat com ID do chamado na URL
     div.onclick = () => {
       window.location.href = "chat.html?id=" + c._id;
     };
 
+    // Preenche conteúdo do card com título, descrição e status do chamado
     div.innerHTML = `
       <strong>${c.titulo}</strong><br>
       ${c.descricao}<br>
       Status: ${c.status}
     `;
 
+    // Adiciona o card ao container da lista
     lista.appendChild(div);
   });
 }
 
+// Função de navegação: retorna para a página principal do sistema
 function voltar() {
   window.location.href = "dashboard.html";
 }
 
+// Executa o carregamento inicial dos chamados ao carregar a página
 carregarChamados();
 </script>
 

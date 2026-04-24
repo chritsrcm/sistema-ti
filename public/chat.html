@@ -1,32 +1,56 @@
+<!-- ============================================================================
+  DOCUMENTO HTML: PÁGINA DE CHAT DO CHAMADO
+  Interface para visualização e envio de mensagens em um chamado específico
+============================================================================ -->
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- Metadados e título da página -->
   <title>Chat do Chamado</title>
+  
+  <!-- Link para folha de estilos externa (estilos globais do sistema) -->
   <link rel="stylesheet" href="style.css">
 </head>
+
+<!-- ============================================================================
+  CORPO DA PÁGINA: ESTRUTURA VISUAL DO CHAT
+============================================================================ -->
 <body>
 
+<!-- Container principal da interface de chat -->
 <div class="container">
   <h2>Chat do Chamado</h2>
 
+  <!-- Área dinâmica onde as mensagens serão renderizadas -->
   <div id="mensagens" style="margin-bottom: 20px;"></div>
 
+  <!-- Campo de entrada para digitar nova mensagem -->
   <input type="text" id="msg" placeholder="Digite sua mensagem">
+  
+  <!-- Botão para enviar mensagem: aciona função enviar() -->
   <button onclick="enviar()">Enviar</button>
 
+  <!-- Botão para retornar à lista de chamados -->
   <button onclick="voltar()">Voltar</button>
 </div>
 
+<!-- ============================================================================
+  JAVASCRIPT: LÓGICA DE CARREGAMENTO, ENVIO E EXIBIÇÃO DE MENSAGENS
+============================================================================ -->
 <script>
+// Extrai o ID do chamado a partir dos parâmetros da URL (ex: ?id=abc123)
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get("id");
 
+// Variável para armazenar o perfil do usuário autenticado (usuario, tecnico, admin)
 let meuRole = "";
 
+// Função principal: carrega perfil do usuário, busca chamados e renderiza mensagens
 async function carregar() {
+  // Recupera token de autenticação do localStorage
   const token = localStorage.getItem("token");
 
-  // pega perfil pra saber quem sou
+  // Requisição para obter dados do perfil do usuário autenticado
   const perfilRes = await fetch("/perfil", {
     headers: {
       Authorization: "Bearer " + token
@@ -36,6 +60,7 @@ async function carregar() {
   const perfil = await perfilRes.json();
   meuRole = perfil.role;
 
+  // Requisição para listar todos os chamados (filtragem é feita no backend)
   const res = await fetch("/chamados", {
     headers: {
       Authorization: "Bearer " + token
@@ -43,19 +68,25 @@ async function carregar() {
   });
 
   const chamados = await res.json();
+  
+  // Localiza o chamado específico pelo ID extraído da URL
   const chamado = chamados.find(c => c._id === id);
 
+  // Seleciona o container de mensagens e limpa conteúdo anterior
   const div = document.getElementById("mensagens");
   div.innerHTML = "";
 
+  // Itera sobre o array de mensagens e cria elementos visuais para cada uma
   chamado.mensagens.forEach(m => {
     const p = document.createElement("div");
 
+    // Estilos inline para estrutura visual básica de cada mensagem
     p.style.padding = "8px";
     p.style.margin = "5px 0";
     p.style.borderRadius = "8px";
     p.style.maxWidth = "70%";
 
+    // Diferencia visualmente mensagens do próprio usuário (alinhadas à direita)
     if (m.autor === meuRole) {
       p.style.background = "#3b82f6";
       p.style.marginLeft = "auto";
@@ -64,18 +95,24 @@ async function carregar() {
       p.style.marginRight = "auto";
     }
 
+    // Define o texto da mensagem
     p.innerText = m.texto;
 
+    // Adiciona o elemento ao container de mensagens
     div.appendChild(p);
   });
 }
 
+// Função para enviar nova mensagem para o chamado
 async function enviar() {
+  // Captura o texto digitado pelo usuário
   const texto = document.getElementById("msg").value;
   const token = localStorage.getItem("token");
 
+  // Validação simples: não envia mensagem vazia
   if (!texto) return;
 
+  // Requisição POST para endpoint de mensagens do chamado específico
   await fetch("/chamados/" + id + "/mensagem", {
     method: "POST",
     headers: {
@@ -85,14 +122,19 @@ async function enviar() {
     body: JSON.stringify({ texto })
   });
 
+  // Limpa o campo de input após envio
   document.getElementById("msg").value = "";
+  
+  // Recarrega as mensagens para exibir a nova mensagem enviada
   carregar();
 }
 
+// Função de navegação: retorna para a página de lista de chamados
 function voltar() {
   window.location.href = "lista-chamados.html";
 }
 
+// Executa o carregamento inicial das mensagens ao abrir a página
 carregar();
 </script>
 

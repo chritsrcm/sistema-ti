@@ -1,11 +1,25 @@
+<!-- ============================================================================
+  DOCUMENTO HTML: PÁGINA DE RELATÓRIOS E DASHBOARD ANALÍTICO
+  Interface com métricas, gráficos interativos e filtros por período
+============================================================================ -->
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- Metadados e título da página -->
   <title>Relatórios</title>
+  
+  <!-- Chart.js: biblioteca para renderização de gráficos -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- ========================================================================
+    ESTILOS INTERNOS: CSS específico da página de relatórios
+    Inclui reset, layout, cards, gráficos, filtros e responsividade
+  ======================================================================== -->
   <style>
+    /* Reset básico de margens e box-sizing para consistência entre navegadores */
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* Configuração do corpo: fundo com gradiente, cores e overflow controlado */
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background: radial-gradient(ellipse at top, #1e293b 0%, #0f172a 40%, #020617 100%);
@@ -16,7 +30,7 @@
       overflow-x: hidden;
     }
 
-    /* Canvas de fundo */
+    /* Canvas de fundo: elemento para animação de partículas, sem interatividade */
     #bg {
       position: fixed;
       top: 0;
@@ -27,7 +41,7 @@
       pointer-events: none;
     }
 
-    /* Efeitos de brilho no fundo */
+    /* Efeitos de brilho flutuante no fundo com animação suave */
     body::before,
     body::after {
       content: '';
@@ -62,7 +76,7 @@
       66% { transform: translate(-20px, 30px) scale(0.95); }
     }
 
-    /* Container principal */
+    /* Container principal: largura máxima e animação de entrada */
     .container {
       position: relative;
       z-index: 1;
@@ -76,6 +90,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Título da página com divisor decorativo inferior */
     h2 {
       font-size: 24px;
       margin-bottom: 25px;
@@ -98,7 +113,7 @@
       border-radius: 2px;
     }
 
-    /* Grid system */
+    /* Sistema de grid responsivo para organização dos cards e gráficos */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -106,7 +121,7 @@
       margin-bottom: 20px;
     }
 
-    /* Cards */
+    /* Cards de métrica: estilo base com hover e efeito de destaque */
     .card {
       background: linear-gradient(145deg, rgba(2,6,23,0.95), rgba(15,23,42,0.9));
       backdrop-filter: blur(16px);
@@ -147,6 +162,7 @@
       opacity: 1;
     }
 
+    /* Variante de card para métricas com fundo diferenciado */
     .card-metrica {
       background: linear-gradient(145deg, rgba(15,23,42,0.95), rgba(30,41,59,0.9));
     }
@@ -160,6 +176,7 @@
       font-weight: 600;
     }
 
+    /* Números das métricas com efeito de glow e transição no hover */
     .numero {
       font-size: 36px;
       font-weight: 800;
@@ -172,6 +189,7 @@
       transform: scale(1.05);
     }
 
+    /* Cores específicas para diferentes tipos de métrica */
     .numero.verde {
       color: #10b981;
       text-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
@@ -182,7 +200,7 @@
       text-shadow: 0 0 30px rgba(245, 158, 11, 0.6);
     }
 
-    /* Boxes de gráfico */
+    /* Containers para gráficos: altura fixa, estilo glass e hover */
     .grafico-box {
       height: 350px;
       position: relative;
@@ -222,6 +240,7 @@
       opacity: 1;
     }
 
+    /* Títulos dos gráficos com divisor centralizado */
     h3 {
       margin-bottom: 15px;
       font-size: 16px;
@@ -243,12 +262,13 @@
       border-radius: 2px;
     }
 
+    /* Canvas dos gráficos: ocupa espaço disponível dentro do container */
     .grafico-box canvas {
       width: 100% !important;
       height: calc(100% - 30px) !important;
     }
 
-    /* Filtros de período */
+    /* Filtros de período: botões com estado ativo e efeitos de hover */
     .filtros-periodo {
       display: flex;
       gap: 12px;
@@ -310,11 +330,12 @@
       box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
     }
 
+    /* Utilitários de layout para seção de resumo */
     #resumo { margin-bottom: 20px; }
     #resumo .card { min-width: 200px; }
     .tempo-medio { grid-column: 1 / -1; }
 
-    /* Botão voltar */
+    /* Botão voltar: estilo secundário com gradient e efeitos de interação */
     .btn-voltar {
       display: inline-flex;
       align-items: center;
@@ -358,7 +379,7 @@
       transform: translateY(0);
     }
 
-    /* Scrollbar personalizado */
+    /* Scrollbar personalizado para consistência visual */
     ::-webkit-scrollbar {
       width: 8px;
       height: 8px;
@@ -379,82 +400,52 @@
       background: rgba(59, 130, 246, 0.6);
     }
 
-    /* Responsivo */
+    /* Media queries para responsividade em diferentes breakpoints */
     @media (max-width: 1024px) {
-      .grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      }
+      .grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
     }
 
     @media (max-width: 768px) {
-      body {
-        padding: 16px;
-      }
-
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      .numero {
-        font-size: 28px;
-      }
-
-      .grafico-box {
-        height: 300px;
-      }
-
-      .filtros-periodo {
-        width: 100%;
-        justify-content: center;
-      }
-
-      h2 {
-        font-size: 22px;
-      }
+      body { padding: 16px; }
+      .grid { grid-template-columns: 1fr; }
+      .numero { font-size: 28px; }
+      .grafico-box { height: 300px; }
+      .filtros-periodo { width: 100%; justify-content: center; }
+      h2 { font-size: 22px; }
     }
 
     @media (max-width: 480px) {
-      .card, .grafico-box {
-        padding: 16px;
-        border-radius: 14px;
-      }
-
-      .numero {
-        font-size: 24px;
-      }
-
-      .filtros-periodo button {
-        padding: 8px 16px;
-        font-size: 13px;
-      }
-
-      .btn-voltar {
-        width: 100%;
-        justify-content: center;
-      }
+      .card, .grafico-box { padding: 16px; border-radius: 14px; }
+      .numero { font-size: 24px; }
+      .filtros-periodo button { padding: 8px 16px; font-size: 13px; }
+      .btn-voltar { width: 100%; justify-content: center; }
     }
 
-    /* Acessibilidade */
+    /* Acessibilidade: foco visível para navegação via teclado */
     button:focus-visible,
     .btn-voltar:focus-visible {
       outline: 2px solid #3b82f6;
       outline-offset: 2px;
     }
 
-    /* Utilitários */
+    /* Classe utilitária para ocultar elementos via JavaScript */
     .hidden { display: none !important; }
   </style>
 </head>
 
+<!-- ============================================================================
+  CORPO DA PÁGINA: ESTRUTURA VISUAL DO DASHBOARD DE RELATÓRIOS
+============================================================================ -->
 <body>
 
-<!-- Canvas de fundo para partículas -->
+<!-- Canvas para animação de fundo (partículas) -->
 <canvas id="bg"></canvas>
 
+<!-- Container principal com métricas, filtros e gráficos -->
 <div class="container">
   <h2>📊 Dashboard de Chamados</h2>
 
-  <!-- RESUMO -->
+  <!-- Cards de resumo: total, fechados, abertos e tempo médio -->
   <div class="grid" id="resumo">
     <div class="card card-metrica">
       <div class="card-titulo">Total</div>
@@ -474,7 +465,7 @@
     </div>
   </div>
 
-  <!-- FILTROS -->
+  <!-- Filtros de período: botões para selecionar janela de tempo dos dados -->
   <div class="filtros-periodo">
     <button onclick="aplicarPeriodo(7)" class="ativo">7 dias</button>
     <button onclick="aplicarPeriodo(30)">30 dias</button>
@@ -482,7 +473,7 @@
     <button onclick="aplicarPeriodo(365)">1 ano</button>
   </div>
 
-  <!-- GRÁFICOS -->
+  <!-- Grid de gráficos: status, prioridade, por técnico e distribuição mensal -->
   <div class="grid">
     <div class="grafico-box">
       <h3>Status</h3>
@@ -505,22 +496,26 @@
     </div>
   </div>
 
+  <!-- Botão de navegação: retorna para dashboard principal -->
   <button class="btn-voltar" onclick="window.location.href='dashboard.html'">
     ⬅ Voltar para Dashboard
   </button>
 </div>
 
-<!-- SEU SCRIPT ORIGINAL - ABSOLUTAMENTE INTACTO -->
+<!-- ============================================================================
+  JAVASCRIPT: LÓGICA DE DADOS, GRÁFICOS E FILTROS
+============================================================================ -->
 <script>
-
+// Variáveis de estado global para armazenar dados e instâncias de gráficos
 let chamadosGlobal = [];
 let periodoAtual = 30;
 let chartStatus, chartPrioridade, chartMensal, chartTecnico;
 
+// Função principal: busca chamados da API, processa métricas e renderiza gráficos
 async function carregarRelatorios() {
-
   const token = localStorage.getItem("token");
 
+  // Requisição GET para endpoint de chamados com token de autenticação
   const res = await fetch("/chamados", {
     headers: { Authorization: "Bearer " + token }
   });
@@ -529,30 +524,29 @@ async function carregarRelatorios() {
 
   if (!chamados.length) return;
 
+  // Inicializa contadores para métricas de status, prioridade e tempo
   let abertos = 0, andamento = 0, fechados = 0;
   let normal = 0, atencao = 0, urgente = 0;
-
   let totalTempo = 0;
   let totalFechados = 0;
 
+  // Mapa para agrupar chamados por técnico responsável
   const tecnicoMap = {};
 
+  // Processa cada chamado para extrair métricas agregadas
   chamados.forEach(c => {
-
     const status = (c.status || "").toLowerCase();
 
-    // STATUS
+    // Contagem por status
     if (status === "aberto") abertos++;
     if (status === "andamento") andamento++;
     if (status === "fechado") fechados++;
 
-    // PRIORIDADE
+    // Cálculo de prioridade baseado em tempo restante para SLA de 3 dias
     const criado = new Date(c.criadoEm || c.createdAt);
     const agora = new Date();
-
     const limite = new Date(criado);
     limite.setDate(limite.getDate() + 3);
-
     const dias = Math.ceil((limite - agora) / (1000*60*60*24));
 
     if (status !== "fechado") {
@@ -561,22 +555,20 @@ async function carregarRelatorios() {
       else normal++;
     }
 
-    // TEMPO MÉDIO
+    // Cálculo de tempo médio de resolução para chamados fechados
     if (status === "fechado") {
       const fechado = new Date(c.updatedAt);
       const diff = Math.ceil((fechado - criado) / (1000*60*60*24));
-
       totalTempo += diff;
       totalFechados++;
     }
 
-    // POR TÉCNICO
+    // Agrupamento por técnico para gráfico de distribuição
     const nomeTec = c.tecnico?.nome || "Não atribuído";
-
     tecnicoMap[nomeTec] = (tecnicoMap[nomeTec] || 0) + 1;
   });
 
-  // 🔥 CARDS
+  // Renderiza cards de resumo com métricas calculadas
   document.getElementById("resumo").innerHTML = `
     <div class="card"><h3>Total</h3><div class="numero">${chamados.length}</div></div>
     <div class="card"><h3>Fechados</h3><div class="numero">${fechados}</div></div>
@@ -586,27 +578,28 @@ async function carregarRelatorios() {
     </div></div>
   `;
 
-
+  // Cria gráfico de distribuição por técnico
   criarGraficoTecnico(
     Object.keys(tecnicoMap),
     Object.values(tecnicoMap)
   );
 
+  // Prepara array de contagem mensal (12 meses)
   const meses = Array(12).fill(0);
+  chamados.forEach(c => {
+    const data = new Date(c.criadoEm || c.createdAt);
+    const mes = data.getMonth();
+    meses[mes]++;
+  });
+  criarGraficoMensal(meses);
 
-chamados.forEach(c => {
-  const data = new Date(c.criadoEm || c.createdAt);
-  const mes = data.getMonth(); // 0 a 11
-  meses[mes]++;
-});
-criarGraficoMensal(meses);
-chamadosGlobal = chamados;
-aplicarPeriodo(periodoAtual);
-
+  // Armazena dados globais e aplica filtro de período inicial
+  chamadosGlobal = chamados;
+  aplicarPeriodo(periodoAtual);
 }
 
+// Cria gráfico de rosca (doughnut) para distribuição por status
 function criarGraficoStatus(a, b, c) {
-
   if (chartStatus) chartStatus.destroy();
 
   chartStatus = new Chart(document.getElementById("graficoStatus"), {
@@ -625,8 +618,8 @@ function criarGraficoStatus(a, b, c) {
   });
 }
 
+// Cria gráfico de barras para distribuição de chamados por técnico
 function criarGraficoTecnico(labels, data) {
-
   if (chartTecnico) chartTecnico.destroy();
 
   chartTecnico = new Chart(document.getElementById("graficoTecnico"), {
@@ -642,10 +635,11 @@ function criarGraficoTecnico(labels, data) {
   });
 }
 
+// Inicializa carregamento dos relatórios ao carregar o script
 carregarRelatorios();
 
+// Cria gráfico de linha para distribuição mensal de chamados
 function criarGraficoMensal(dados) {
-
   if (chartMensal) chartMensal.destroy();
 
   chartMensal = new Chart(document.getElementById("graficoMensal"), {
@@ -665,49 +659,47 @@ function criarGraficoMensal(dados) {
   });
 }
 
+// Aplica filtro de período e atualiza gráficos com dados filtrados
 function aplicarPeriodo(dias) {
-
   periodoAtual = dias;
-
   const agora = new Date();
 
+  // Filtra chamados dentro da janela de tempo especificada
   const filtrados = chamadosGlobal.filter(c => {
     const data = new Date(c.criadoEm || c.createdAt);
-
     const diff = (agora - data) / (1000 * 60 * 60 * 24);
-
     return diff <= dias;
   });
 
-  atualizarGraficos(filtrados);
+  // Se não houver dados no período, usa dataset completo como fallback
+  if (filtrados.length === 0) {
+    atualizarGraficos(chamadosGlobal);
+  } else {
+    atualizarGraficos(filtrados);
+  }
 }
 
+// Atualiza todos os gráficos com base no conjunto de chamados fornecido
 function atualizarGraficos(chamados) {
-
   let abertos = 0, andamento = 0, fechados = 0;
   let normal = 0, atencao = 0, urgente = 0;
-
   const meses = Array(12).fill(0);
   const tecnicoMap = {};
 
   chamados.forEach(c => {
-
     const nomeTec = c.tecnico?.nome || "Não atribuído";
     tecnicoMap[nomeTec] = (tecnicoMap[nomeTec] || 0) + 1;
 
     const status = (c.status || "").toLowerCase();
-
     if (status === "aberto") abertos++;
     if (status === "andamento") andamento++;
     if (status === "fechado") fechados++;
 
-    // prioridade
+    // Recalcula prioridade para o conjunto filtrado
     const criado = new Date(c.criadoEm || c.createdAt);
     const agora = new Date();
-
     const limite = new Date(criado);
     limite.setDate(limite.getDate() + 3);
-
     const diasRestantes = Math.ceil((limite - agora) / (1000*60*60*24));
 
     if (status !== "fechado") {
@@ -716,24 +708,23 @@ function atualizarGraficos(chamados) {
       else normal++;
     }
 
-    // mensal
+    // Atualiza contagem mensal
     const mes = criado.getMonth();
     meses[mes]++;
   });
 
-  // 🔥 AQUI QUE FALTAVA
+  // Recria todos os gráficos com dados atualizados
   criarGraficoStatus(abertos, andamento, fechados);
   criarGraficoPrioridade(normal, atencao, urgente);
   criarGraficoMensal(meses);
-
   criarGraficoTecnico(
     Object.keys(tecnicoMap),
     Object.values(tecnicoMap)
   );
 }
 
+// Cria gráfico de barras para distribuição por nível de prioridade
 function criarGraficoPrioridade(n, a, u) {
-
   if (chartPrioridade) chartPrioridade.destroy();
 
   chartPrioridade = new Chart(document.getElementById("graficoPrioridade"), {
@@ -749,34 +740,18 @@ function criarGraficoPrioridade(n, a, u) {
   });
 }
 
-function aplicarPeriodo(dias) {
-
-  periodoAtual = dias;
-
-  const agora = new Date();
-
-  const filtrados = chamadosGlobal.filter(c => {
-    const data = new Date(c.criadoEm || c.createdAt);
-    const diff = (agora - data) / (1000 * 60 * 60 * 24);
-    return diff <= dias;
-  });
-
-  // 🔥 SE NÃO TIVER DADOS → USA TODOS
-  if (filtrados.length === 0) {
-    atualizarGraficos(chamadosGlobal);
-  } else {
-    atualizarGraficos(filtrados);
-  }
-}
-
+// Função de navegação: retorna para dashboard principal
 function voltarDashboard() {
   window.location.href = "dashboard.html";
 }
-
 </script>
 
-<!-- Script das partículas de fundo (consistente com outras páginas) -->
+<!-- ============================================================================
+  SCRIPT DE ANIMAÇÃO DE FUNDO E PROTEÇÃO DE ROTA
+  Mantém consistência visual com outras páginas do sistema
+============================================================================ -->
 <script>
+// Configuração do canvas para animação de partículas de fundo
 const canvas = document.getElementById("bg");
 const ctx = canvas.getContext("2d");
 
@@ -785,6 +760,7 @@ canvas.height = window.innerHeight;
 
 let particles = [];
 
+// Inicializa 100 partículas com posição e velocidade aleatórias
 for (let i = 0; i < 100; i++) {
   particles.push({
     x: Math.random() * canvas.width,
@@ -795,6 +771,7 @@ for (let i = 0; i < 100; i++) {
   });
 }
 
+// Loop de animação: atualiza posição e redesenha partículas
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -802,6 +779,7 @@ function animate() {
     p.x += p.speedX;
     p.y += p.speedY;
 
+    // Inverte direção ao atingir bordas para efeito de quique
     if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
     if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
 
@@ -816,11 +794,13 @@ function animate() {
 
 animate();
 
+// Ajusta dimensões do canvas ao redimensionar a janela
 window.addEventListener("resize", () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 });
 
+// Função de proteção de rota: verifica permissão de acesso à página
 async function protegerPagina() {
   const token = localStorage.getItem("token");
 
@@ -830,14 +810,15 @@ async function protegerPagina() {
 
   const user = await res.json();
 
+  // Usuários comuns não têm acesso à área de relatórios
   if (user.role === "usuario") {
     alert("Acesso restrito");
     window.location.href = "dashboard.html";
   }
 }
 
+// Executa verificação de permissão ao carregar a página
 protegerPagina();
-
 </script>
 
 </body>

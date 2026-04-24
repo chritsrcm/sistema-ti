@@ -1,11 +1,25 @@
+<!-- ============================================================================
+  DOCUMENTO HTML: PÁGINA DE DETALHES DO CHAMADO
+  Interface para visualização completa de um chamado específico com chat integrado
+============================================================================ -->
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- Metadados e título da página -->
   <title>Detalhe do Chamado</title>
+  
+  <!-- Link para folha de estilos externa (estilos globais do sistema) -->
   <link rel="stylesheet" href="style.css">
+  
+  <!-- ========================================================================
+    ESTILOS INTERNOS: CSS específico desta página
+    Inclui reset, layout, animações, componentes e responsividade
+  ======================================================================== -->
   <style>
+    /* Reset básico de margens e box-sizing para consistência entre navegadores */
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* Configuração do corpo: fonte, cores e fundo com gradiente radial */
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       min-height: 100vh;
@@ -16,7 +30,7 @@
       overflow-x: hidden;
     }
 
-    /* Canvas de fundo */
+    /* Canvas de fundo: elemento para animação de partículas, sem interatividade */
     #bg {
       position: fixed;
       top: 0;
@@ -27,7 +41,7 @@
       pointer-events: none;
     }
 
-    /* Efeitos de brilho no fundo */
+    /* Efeitos de brilho flutuante no fundo com animação suave */
     body::before,
     body::after {
       content: '';
@@ -62,7 +76,7 @@
       66% { transform: translate(-20px, 30px) scale(0.95); }
     }
 
-    /* Container principal */
+    /* Container principal: estilo glassmorphism com bordas e sombra */
     .container {
       position: relative;
       z-index: 1;
@@ -86,6 +100,7 @@
       to { opacity: 1; transform: scale(1) translateY(0); }
     }
 
+    /* Detalhe decorativo superior no container */
     .container::before {
       content: '';
       position: absolute;
@@ -98,7 +113,7 @@
       border-radius: 0 0 12px 12px;
     }
 
-    /* Header */
+    /* Cabeçalho da página com título e badges de status */
     .header {
       margin-bottom: 24px;
       padding-bottom: 20px;
@@ -129,7 +144,7 @@
       color: #020617;
     }
 
-    /* Info section */
+    /* Grade de informações do chamado com layout responsivo */
     .info {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -155,7 +170,7 @@
       font-weight: 600;
     }
 
-    /* Descrição */
+    /* Caixa de descrição com preservação de quebras de linha */
     .descricao-box {
       padding: 18px;
       background: rgba(2, 6, 23, 0.6);
@@ -172,7 +187,7 @@
       white-space: pre-wrap;
     }
 
-    /* Anexo */
+    /* Área de anexo com link para download */
     .anexo-box {
       padding: 14px 18px;
       background: rgba(30, 41, 59, 0.3);
@@ -194,7 +209,7 @@
       text-decoration: underline;
     }
 
-    /* Ações / Botões */
+    /* Grupo de botões de ação com layout flexível */
     .acoes {
       display: flex;
       gap: 12px;
@@ -202,6 +217,7 @@
       flex-wrap: wrap;
     }
 
+    /* Estilo base para botões com gradiente e efeitos de hover */
     button {
       padding: 12px 20px;
       border-radius: 12px;
@@ -209,7 +225,7 @@
       background: linear-gradient(135deg, #2563eb, #3b82f6);
       color: white;
       font-size: 14px;
-      font-weight: 10;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       display: inline-flex;
@@ -243,6 +259,7 @@
       transform: translateY(0);
     }
 
+    /* Estilo alternativo para botões secundários */
     .acoes button:nth-child(2) {
       background: linear-gradient(135deg, #475569, #64748b);
     }
@@ -251,7 +268,7 @@
       box-shadow: 0 10px 30px -10px rgba(100, 116, 139, 0.4);
     }
 
-    /* Chat Container - Layout tipo WhatsApp */
+    /* Container do chat: layout vertical estilo aplicativo de mensagens */
     #chatContainer {
       margin-top: 24px;
       padding-top: 24px;
@@ -277,6 +294,7 @@
       gap: 8px;
     }
 
+    /* Área de mensagens com scroll personalizado */
     #mensagens {
       background: rgba(2, 6, 23, 0.95);
       padding: 20px;
@@ -305,7 +323,7 @@
       border-radius: 3px;
     }
 
-    /* Mensagens do chat - Estilo bolha */
+    /* Estrutura das mensagens com alinhamento dinâmico por autor */
     #mensagens > div {
       display: flex;
       margin-bottom: 4px;
@@ -327,6 +345,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Mensagens do usuário atual: alinhadas à direita com cor destacada */
     .msg-me {
       background: linear-gradient(135deg, #3b82f6, #2563eb);
       color: white;
@@ -334,6 +353,7 @@
       border-bottom-right-radius: 4px;
     }
 
+    /* Mensagens de outros usuários: alinhadas à esquerda com cor neutra */
     .msg-other {
       background: rgba(30, 41, 59, 0.95);
       color: #e2e8f0;
@@ -341,7 +361,7 @@
       border-bottom-left-radius: 4px;
     }
 
-    /* Chat input area fixa embaixo */
+    /* Área de input do chat: layout horizontal com campos arredondados */
     .chat-input {
       display: flex;
       gap: 12px;
@@ -383,7 +403,7 @@
       box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
     }
 
-    /* Notificação flutuante */
+    /* Notificação flutuante: toast com animação de entrada */
     #notificacao {
       position: fixed;
       top: 20px;
@@ -421,7 +441,7 @@
       line-height: 1.4;
     }
 
-    /* Responsivo */
+    /* Media queries para responsividade em tablets e mobile */
     @media (max-width: 768px) {
       .container {
         margin: 20px 16px;
@@ -492,7 +512,7 @@
       }
     }
 
-    /* Acessibilidade */
+    /* Acessibilidade: foco visível para navegação via teclado */
     button:focus-visible,
     input:focus-visible,
     a:focus-visible {
@@ -500,18 +520,23 @@
       outline-offset: 2px;
     }
 
-    /* Utilitários */
+    /* Classe utilitária para ocultar elementos via JavaScript */
     .hidden { display: none !important; }
   </style>
 </head>
 
+<!-- ============================================================================
+  CORPO DA PÁGINA: ESTRUTURA VISUAL DO DETALHE DO CHAMADO
+============================================================================ -->
 <body>
 
+<!-- Canvas para animação de fundo (partículas/estrelas) -->
 <canvas id="bg"></canvas>
 
+<!-- Container principal com informações e ações do chamado -->
 <div class="container">
 
-  <!-- HEADER -->
+  <!-- Cabeçalho: título e badges de status/prioridade -->
   <div class="header">
     <h2 id="titulo"></h2>
     <div class="badges">
@@ -520,7 +545,7 @@
     </div>
   </div>
 
-  <!-- INFO -->
+  <!-- Grade de informações: número, empresa, setor, técnico, categoria -->
   <div class="info">
     <p>🔢 <strong id="numero"></strong></p>
     <p>🏢 <strong id="empresa"></strong></p>
@@ -529,24 +554,24 @@
     <p>📂 <span id="categoria"></span></p>
   </div>
 
-  <!-- DESCRIÇÃO -->
+  <!-- Caixa de descrição do problema com formatação preservada -->
   <div class="descricao-box">
     <p id="descricao"></p>
   </div>
 
-  <!-- ANEXO -->
+  <!-- Área dinâmica para exibição de anexo (link ou mensagem) -->
   <div id="anexo" class="anexo-box"></div>
 
-  <!-- AÇÕES DINÂMICAS -->
+  <!-- Área dinâmica para botões de ação (mudar status) -->
   <div id="acoes" class="acoes"></div>
 
-  <!-- BOTÕES FIXOS -->
+  <!-- Botões fixos: abrir chat e voltar -->
   <div class="acoes">
     <button onclick="abrirChat()">💬 Chat</button>
     <button onclick="voltar()">⬅ Voltar</button>
   </div>
 
-  <!-- CHAT -->
+  <!-- Container do chat: oculto por padrão, exibido via toggle -->
   <div id="chatContainer" style="display:none;">
     <h3>💬 Conversa</h3>
     <div id="mensagens"></div>
@@ -558,37 +583,43 @@
 
 </div>
 
-<!-- NOTIFICAÇÃO -->
+<!-- Notificação flutuante temporária (toast) -->
 <div id="notificacao">
   <strong id="notifNome">Usuário</strong>
   <div id="notifTexto"></div>
 </div>
 
-<!-- SEU SCRIPT ORIGINAL - ABSOLUTAMENTE INTACTO -->
+<!-- ============================================================================
+  JAVASCRIPT: LÓGICA DE CARREGAMENTO, CHAT, ATUALIZAÇÃO E NOTIFICAÇÕES
+============================================================================ -->
 <script>
+// Variáveis de estado para controle de sessão e mensagens
 let meuId = null;
 let chamadoAtual = null;
 let ultimoIdMensagem = null;
 let audioLiberado = false;
 let qtdMensagensAnterior = 0;
 
+// Extrai ID do chamado a partir dos parâmetros da URL
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get("id");
 
-
+// Habilita reprodução de áudio após primeira interação do usuário (política de browsers)
 document.addEventListener("click", () => {
   audioLiberado = true;
 });
 
+// Instancia objeto de áudio para notificação sonora
 const audio = new Audio("https://www.soundjay.com/buttons/sounds/button-3.mp3");
 
+// Função para tocar som de notificação (respeita política de autoplay)
 function tocarSom() {
   if (!audioLiberado) return;
-
   audio.currentTime = 0;
   audio.play().catch(() => {});
 }
 
+// Função de navegação: volta para página anterior ou dashboard
 function voltar() {
   if (window.history.length > 1) {
     window.history.back();
@@ -597,16 +628,18 @@ function voltar() {
   }
 }
 
+// Inicia carregamento dos dados ao finalizar renderização do DOM
 document.addEventListener("DOMContentLoaded", () => {
   carregarChamado();
 });
 
-async function carregarChamado()
- {
+// Função principal: busca dados do chamado e perfil, renderiza interface
+async function carregarChamado() {
   try {
     const token = localStorage.getItem("token");
     console.log("TOKEN:", token);
 
+    // Busca lista de chamados para localizar o específico pelo ID
     const res = await fetch("/chamados", {
       headers: { Authorization: "Bearer " + token }
     });
@@ -618,84 +651,71 @@ async function carregarChamado()
     chamadoAtual = chamados.find(c => String(c._id) === String(id));
     if (!chamadoAtual) return;
 
+    // Preenche campos básicos do chamado na interface
     document.getElementById("titulo").innerText = chamadoAtual.titulo;
     document.getElementById("descricao").innerText = chamadoAtual.descricao;
     document.getElementById("categoria").innerText = "Categoria: " + chamadoAtual.categoria;
+    
+    // Define estilo visual do badge de status conforme valor
     const statusEl = document.getElementById("status");
+    statusEl.innerText = chamadoAtual.status.toUpperCase();
 
-statusEl.innerText = chamadoAtual.status.toUpperCase();
+    if (chamadoAtual.status === "aberto") {
+      statusEl.style.background = "#22c55e";
+    }
+    if (chamadoAtual.status === "andamento") {
+      statusEl.style.background = "#facc15";
+    }
+    if (chamadoAtual.status === "fechado") {
+      statusEl.style.background = "#ef4444";
+    }
 
-if (chamadoAtual.status === "aberto") {
-  statusEl.style.background = "#22c55e";
-}
+    // Preenche campos adicionais: número, empresa, setor, técnico
+    document.getElementById("numero").innerText = "Chamado: " + (chamadoAtual.numero || "N/A");
+    document.getElementById("empresa").innerText = "Empresa: " + (chamadoAtual.empresa || "N/A");
+    document.getElementById("setor").innerText = "Setor: " + (chamadoAtual.setor || "N/A");
 
-if (chamadoAtual.status === "andamento") {
-  statusEl.style.background = "#facc15";
-}
+    const nomeTecnico = chamadoAtual.tecnico?.nome || "Não atribuído";
+    document.getElementById("tecnico").innerText = "Técnico: " + nomeTecnico;
 
-if (chamadoAtual.status === "fechado") {
-  statusEl.style.background = "#ef4444";
-}
-   // 🔥 NOVOS CAMPOS
-document.getElementById("numero").innerText =
-  "Chamado: " + (chamadoAtual.numero || "N/A");
+    // Exibe link para download se houver arquivo anexado
+    if (chamadoAtual.arquivo) {
+      document.getElementById("anexo").innerHTML = `
+        📎 <a href="/uploads/${chamadoAtual.arquivo}" download>
+          Baixar arquivo
+        </a>
+      `;
+    } else {
+      document.getElementById("anexo").innerText = "Anexo: Nenhum";
+    }
 
-document.getElementById("empresa").innerText =
-  "Empresa: " + (chamadoAtual.empresa || "N/A");
-
-document.getElementById("setor").innerText =
-  "Setor: " + (chamadoAtual.setor || "N/A");
-
-// técnico (com populate)
-const nomeTecnico = chamadoAtual.tecnico?.nome || "Não atribuído";
-
-document.getElementById("tecnico").innerText =
-  "Técnico: " + nomeTecnico;
-
-// anexo
-if (chamadoAtual.arquivo) {
-  document.getElementById("anexo").innerHTML = `
-    📎 <a href="/uploads/${chamadoAtual.arquivo}" download>
-      Baixar arquivo
-    </a>
-  `;
-} else {
-  document.getElementById("anexo").innerText = "Anexo: Nenhum";
-}
-
-
+    // Busca perfil do usuário para definir permissões e ID
     const perfilRes = await fetch("/perfil", {
       headers: { Authorization: "Bearer " + token }
     });
-
     const user = await perfilRes.json();
     meuId = user._id;
 
-    // 🔥 inicializa ID da última mensagem
+    // Inicializa identificador da última mensagem para controle de novidades
     if (chamadoAtual.mensagens?.length) {
-  const ultima = chamadoAtual.mensagens[chamadoAtual.mensagens.length - 1];
-  ultimoIdMensagem = ultima.texto + ultima.autor;
-}
+      const ultima = chamadoAtual.mensagens[chamadoAtual.mensagens.length - 1];
+      ultimoIdMensagem = ultima.texto + ultima.autor;
+    }
 
-    // 🔥 BOTÕES
+    // Renderiza botões de ação conforme perfil e status do chamado
     const acoes = document.getElementById("acoes");
     acoes.innerHTML = "";
 
     if (user.role === "tecnico" || user.role === "admin") {
-
       if (chamadoAtual.status === "aberto") {
-        acoes.innerHTML += `
-          <button onclick="mudarStatus('andamento')">▶️ Iniciar Chamado</button>
-        `;
+        acoes.innerHTML += `<button onclick="mudarStatus('andamento')">▶️ Iniciar Chamado</button>`;
       }
-
       if (chamadoAtual.status !== "fechado") {
-        acoes.innerHTML += `
-          <button onclick="mudarStatus('fechado')">✅ Fechar Chamado</button>
-        `;
+        acoes.innerHTML += `<button onclick="mudarStatus('fechado')">✅ Fechar Chamado</button>`;
       }
     }
 
+    // Renderiza mensagens do chat e armazena quantidade inicial para polling
     renderMensagens();
 
   } catch (err) {
@@ -705,6 +725,7 @@ if (chamadoAtual.arquivo) {
   qtdMensagensAnterior = chamadoAtual.mensagens?.length || 0;
 }
 
+// Renderiza mensagens do chat com formatação de hora e alinhamento por autor
 function renderMensagens() {
   const div = document.getElementById("mensagens");
   div.innerHTML = "";
@@ -712,7 +733,6 @@ function renderMensagens() {
   if (!chamadoAtual?.mensagens) return;
 
   chamadoAtual.mensagens.forEach(m => {
-
     const hora = new Date(m.data).toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit'
@@ -737,22 +757,20 @@ function renderMensagens() {
     el.style.color = minhaMensagem ? "white" : "#e2e8f0";
 
     el.innerHTML = `
-      <div style="font-size:11px; opacity:0.6;">
-        ${m.nome || "Usuário"}
-      </div>
+      <div style="font-size:11px; opacity:0.6;">${m.nome || "Usuário"}</div>
       <div style="margin-top:3px;">${m.texto}</div>
-      <div style="font-size:10px; opacity:0.5; margin-top:4px; text-align:right;">
-        ${hora}
-      </div>
+      <div style="font-size:10px; opacity:0.5; margin-top:4px; text-align:right;">${hora}</div>
     `;
 
     wrapper.appendChild(el);
     div.appendChild(wrapper);
   });
 
+  // Rola automaticamente para a última mensagem
   div.scrollTop = div.scrollHeight;
 }
 
+// Envia nova mensagem para o chamado via API e recarrega dados
 async function enviar() {
   const texto = document.getElementById("msg").value;
   const token = localStorage.getItem("token");
@@ -772,6 +790,7 @@ async function enviar() {
   await carregarChamado();
 }
 
+// Altera status do chamado via API e redireciona para dashboard
 async function mudarStatus(status) {
   const token = localStorage.getItem("token");
 
@@ -788,7 +807,10 @@ async function mudarStatus(status) {
   window.location.href = "dashboard.html";
 }
 
-// 🔄 AUTO UPDATE
+// ============================================================================
+// POLLING DE ATUALIZAÇÃO EM TEMPO REAL (INTERVALO DE 2 SEGUNDOS)
+// ============================================================================
+
 setInterval(async () => {
   try {
     const token = localStorage.getItem("token");
@@ -798,39 +820,35 @@ setInterval(async () => {
     });
 
     const chamados = await res.json();
-
     const atualizado = chamados.find(c => String(c._id) === String(id));
+    
     if (!atualizado) return;
 
     const mensagens = atualizado.mensagens || [];
-
     console.log("📡 Técnico recebeu:", mensagens.length);
 
-    // 🔥 SE MUDOU
+    // Detecta mudança na quantidade de mensagens para acionar atualização
     if (!chamadoAtual || mensagens.length !== (chamadoAtual.mensagens?.length || 0)) {
+      const ultimaMsg = mensagens[mensagens.length - 1];
+      console.log("🆕 Nova detectada:", ultimaMsg);
 
-  const ultimaMsg = mensagens[mensagens.length - 1];
+      // Notifica apenas se a mensagem for de outro usuário
+      if (ultimaMsg && String(ultimaMsg.autor) !== String(meuId)) {
+        tocarSom();
+        mostrarNotificacao(ultimaMsg.nome, ultimaMsg.texto);
+        console.log("🔔 NOTIFICOU!");
+      }
 
-  console.log("🆕 Nova detectada:", ultimaMsg);
-
-  if (ultimaMsg && String(ultimaMsg.autor) !== String(meuId)) {
-    tocarSom();
-    mostrarNotificacao(ultimaMsg.nome, ultimaMsg.texto);
-    console.log("🔔 NOTIFICOU!");
-  }
-
-  chamadoAtual = atualizado;
-  renderMensagens();
-}
+      chamadoAtual = atualizado;
+      renderMensagens();
+    }
 
   } catch (e) {
     console.log("Erro:", e);
   }
-
-  
-
 }, 2000);
 
+// Toggle para exibir/ocultar container do chat
 function abrirChat() {
   const chat = document.getElementById("chatContainer");
   const btn = event.target;
@@ -844,6 +862,7 @@ function abrirChat() {
   }
 }
 
+// Exibe notificação flutuante com animação de entrada e saída automática
 function mostrarNotificacao(nome, texto) {
   const box = document.getElementById("notificacao");
   const nomeEl = document.getElementById("notifNome");
@@ -862,15 +881,15 @@ function mostrarNotificacao(nome, texto) {
   setTimeout(() => {
     box.style.opacity = "0";
     box.style.transform = "translateY(-20px)";
-
-    setTimeout(() => {
-      box.style.display = "none";
-    }, 300);
+    setTimeout(() => { box.style.display = "none"; }, 300);
   }, 3000);
 }
 
-window.onload = () => {
+// ============================================================================
+// INICIALIZAÇÃO DA ANIMAÇÃO DE FUNDO (CANVAS COM PARTÍCULAS)
+// ============================================================================
 
+window.onload = () => {
   const canvas = document.getElementById("bg");
   const ctx = canvas.getContext("2d");
 
@@ -881,8 +900,8 @@ window.onload = () => {
 
   resize();
 
+  // Inicializa array de partículas com posição e velocidade aleatórias
   let stars = [];
-
   for (let i = 0; i < 120; i++) {
     stars.push({
       x: Math.random() * canvas.width,
@@ -892,17 +911,16 @@ window.onload = () => {
     });
   }
 
+  // Loop de animação: atualiza posição e redesenha partículas
   function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     stars.forEach(star => {
       star.y += star.speed;
-
       if (star.y > canvas.height) {
         star.y = 0;
         star.x = Math.random() * canvas.width;
       }
-
       ctx.beginPath();
       ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
       ctx.fillStyle = "rgba(255,255,255,0.7)";
@@ -913,7 +931,6 @@ window.onload = () => {
   }
 
   animate();
-
   window.addEventListener("resize", resize);
 };
 </script>
